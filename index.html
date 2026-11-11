@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#121416"><link rel="icon" type="image/png" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
+<title>Mueble modular con guía 3D</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600&family=Barlow+Condensed:wght@600;700&display=swap">
+<style>
+:root{--bg:#121416;--card:#1b1e21;--c2:#24282c;--bd:#343a40;--fg:#eceff1;--mut:#9aa4ac;--ac:#ff7a1a;--acd:#1a0f05;--board:#0f1113;--wl:#2a1c0a;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 56px)}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.45 "Barlow",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:#16181a;z-index:10}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 16px;background:#16181a;border-bottom:1px solid var(--bd)}
+.brand{display:flex;align-items:center;gap:10px;font:700 1.25rem/1 "Barlow Condensed","Arial Narrow",system-ui,sans-serif;letter-spacing:.06em;text-transform:uppercase}
+.chip{font:600 .85rem/1 "Barlow",system-ui,sans-serif;color:var(--ac);border:1px solid var(--ac);border-radius:999px;padding:6px 10px;white-space:nowrap;font-variant-numeric:tabular-nums}
+main{max-width:680px;margin:0 auto;padding:16px 16px 110px}
+h1{font:700 1.9rem/1.05 "Barlow Condensed","Arial Narrow",system-ui,sans-serif;letter-spacing:.03em;text-transform:uppercase;margin:4px 0 4px}
+h2{font:700 1.1rem/1.2 "Barlow Condensed","Arial Narrow",system-ui,sans-serif;letter-spacing:.06em;text-transform:uppercase;margin:0 0 10px}
+h2::before{content:"";display:inline-block;width:4px;height:1em;background:var(--ac);border-radius:2px;margin-right:8px;vertical-align:-.14em}
+p.s,.note,.cap{color:var(--mut);font-size:.9rem;margin:0 0 12px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:14px;margin:0 0 12px}
+.out h2{margin-top:22px}
+.g{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+label{display:flex;flex-direction:column;font-size:.82rem;color:var(--mut);gap:4px;letter-spacing:.02em}
+input,select,button,textarea{font:inherit;color:var(--fg);background:var(--c2);border:1px solid var(--bd);border-radius:8px;padding:10px;min-width:0}
+input:focus-visible,select:focus-visible,button:focus-visible,textarea:focus-visible{outline:2px solid var(--ac);outline-offset:1px}
+input[type=range]{padding:0;accent-color:var(--ac);background:transparent;border:0}
+input[type=checkbox]{accent-color:var(--ac);width:18px;height:18px;padding:0}
+.row{display:grid;grid-template-columns:26px 1fr 1.4fr 44px;gap:8px;align-items:center;margin-top:8px}
+.row b{color:var(--ac);font:700 1.1rem "Barlow Condensed",system-ui,sans-serif;text-align:center}
+.cb{border-bottom:1px solid var(--bd);padding-bottom:10px}.cb:last-of-type{border-bottom:0}
+.r2{display:grid;grid-template-columns:1fr 1.4fr;gap:8px;margin:6px 0 0 34px}
+button{cursor:pointer;font-weight:600}
+.cta{width:100%;background:var(--ac);color:var(--acd);border-color:var(--ac);font:700 1.05rem "Barlow Condensed",system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase;padding:13px;margin-top:6px}
+.ghost{background:transparent;border-color:var(--ac);color:var(--ac);width:100%;margin-top:10px}
+button:disabled{opacity:.4;cursor:default}
+.sum{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 6px}
+.sum>div{background:var(--card);border:1px solid var(--bd);border-top:3px solid var(--ac);border-radius:8px;padding:10px}
+.sum b{display:block;font:700 1.3rem/1.15 "Barlow Condensed",system-ui,sans-serif;font-variant-numeric:tabular-nums}.sum span{font-size:.75rem;color:var(--mut)}
+canvas{display:block;width:100%;height:clamp(300px,52vh,480px);touch-action:none;border:1px solid var(--bd);border-radius:10px;background:linear-gradient(var(--c2) 1px,transparent 1px) 0 0/32px 32px,linear-gradient(90deg,var(--c2) 1px,transparent 1px) 0 0/32px 32px,var(--card)}
+.bar{display:flex;gap:8px;align-items:center;margin-top:10px}.bar span{flex:1;text-align:center;font:700 1.1rem "Barlow Condensed",system-ui,sans-serif;letter-spacing:.06em;text-transform:uppercase}
+.bar .pri{background:var(--ac);color:var(--acd);border-color:var(--ac)}
+#st{min-height:3em;margin:10px 0 6px;font-size:1.02rem}
+.tw{overflow-x:auto;border:1px solid var(--bd);border-radius:10px}
+table{width:100%;border-collapse:collapse;font-size:.92rem}
+th,td{text-align:left;padding:8px 8px;border-bottom:1px solid var(--bd);white-space:nowrap}
+th{background:var(--c2);color:var(--mut);font:600 .75rem "Barlow",system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase}
+tr:last-child td{border-bottom:0}td:first-child{color:var(--ac);font-weight:700}td{font-variant-numeric:tabular-nums}
+svg{display:block;width:100%;height:auto;margin:0 0 8px;border:1px solid var(--bd);border-radius:8px}
+.warn{background:var(--card);border-left:4px solid #e5484d;padding:10px;margin-top:12px;border-radius:6px;font-size:.92rem}
+textarea{width:100%;height:150px;margin-top:10px;display:none;box-sizing:border-box}
+ul.l{margin:0 0 12px;padding-left:20px;color:var(--fg)}ul.l li{margin:4px 0}
+nav{position:fixed;inset:auto 0 0;z-index:9;display:grid;grid-template-columns:repeat(5,1fr);background:#16181a;border-top:1px solid var(--bd);padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px))}
+nav button{background:transparent;border:0;border-radius:8px;color:var(--mut);display:flex;flex-direction:column;align-items:center;gap:3px;font:600 .72rem "Barlow",system-ui,sans-serif;letter-spacing:.06em;text-transform:uppercase;padding:6px 2px;position:relative}
+nav button svg{width:24px;height:24px;margin:0;border:0;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+nav button[aria-selected=true]{color:var(--ac)}nav button[aria-selected=true]::before{content:"";position:absolute;top:-7px;left:25%;right:25%;height:3px;background:var(--ac);border-radius:0 0 3px 3px}
+.brand svg{width:26px;height:26px;flex:none}
+.g>*,.r2>*,.row>*{min-width:0}
+input,select{width:100%;box-sizing:border-box}
+.sum{grid-template-columns:1fr 1fr}.sum>div:first-child{grid-column:1/-1}
+.chk{flex-direction:row;align-items:center;gap:8px;color:var(--fg);font-size:.9rem;margin-top:20px}
+.cat{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ct2{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;padding:10px;font-weight:400}
+.ct2 b{font:700 1rem/1.15 "Barlow Condensed","Arial Narrow",system-ui,sans-serif;letter-spacing:.03em;text-transform:uppercase}
+.ct2 span{font-size:.78rem;color:var(--mut);line-height:1.25}
+.ct2:active{border-color:var(--ac)}
+.fl{flex-direction:row;align-items:center;gap:10px;font-size:.95rem;color:var(--fg)}
+.vw{position:sticky;top:calc(env(safe-area-inset-top,0px) + var(--th,62px));z-index:6;background:var(--bg);margin:0 -16px;padding:0 16px 10px}
+.vw canvas{height:clamp(190px,32vh,300px)}.vw.big canvas{height:clamp(300px,58vh,520px)}
+.vz{position:absolute;right:26px;top:10px;width:38px;height:38px;padding:0;display:grid;place-items:center;background:rgba(18,20,22,.78)}
+.vz svg{width:18px;height:18px;margin:0;border:0;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.vz.var{right:118px;width:auto;padding:0 10px;font-weight:700;font-size:.85rem}
+#arov{position:fixed;inset:0;z-index:2000;pointer-events:none;display:flex;flex-direction:column;justify-content:flex-end;padding:16px 16px calc(24px + env(safe-area-inset-bottom,0px))}#arov[hidden]{display:none}
+#arov p{pointer-events:none;background:rgba(18,20,22,.82);color:#eceff1;border-radius:12px;padding:10px 12px;margin:0 0 10px;font-size:.95rem}#arov .arb{display:flex;gap:10px}#arov button{pointer-events:auto;flex:1}
+.vz.vo{right:auto;left:26px;width:auto;padding:0 12px;font-weight:700;font-size:.85rem;color:var(--ac);border-color:var(--ac)}.vz.vfb{right:72px}
+.fbar{display:grid;grid-template-columns:1fr 1fr;gap:8px 10px;margin-top:8px}.fbar label{font-size:.8rem}.fbar .fb2{grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap}.fbar .fb2 button{flex:1 1 30%}.fbar p{grid-column:1/-1;margin:0;font-size:.82rem;color:var(--mut)}
+.curw{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:2px 0 0}.curw p{margin:0;color:var(--fg);font-weight:600}
+.curw button{width:auto;padding:7px 12px;margin:0;font-size:.85rem;background:transparent;border-color:var(--ac);color:var(--ac)}
+.chips{display:flex;gap:8px;overflow-x:auto;margin:0 -16px;padding:2px 16px 14px;scrollbar-width:none}.chips::-webkit-scrollbar{display:none}
+.chip2{flex:none;border-radius:999px;padding:9px 16px;background:var(--c2);border:1px solid var(--bd);color:var(--mut);font-weight:600}
+.chip2[aria-pressed=true]{background:var(--ac);color:var(--acd);border-color:var(--ac)}
+.gal{display:grid;gap:14px}
+.gc{display:block;width:100%;text-align:left;padding:0;background:var(--card);border:1px solid var(--bd);border-radius:12px;overflow:hidden;font-weight:400}
+.gc canvas{width:100%;height:auto;aspect-ratio:8/5;border:0;border-radius:0;background:var(--c2);display:block}
+.gc .gt{padding:12px 14px 14px}.gc h3{font:700 1.3rem/1.15 "Barlow Condensed","Arial Narrow",system-ui,sans-serif;letter-spacing:.03em;text-transform:uppercase;margin:0 0 4px}
+.gc p{color:var(--mut);font-size:.9rem;margin:0 0 10px}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tg{font-size:.72rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;padding:4px 9px;border-radius:999px;background:var(--c2);color:var(--mut);border:1px solid var(--bd)}
+.tg.ac{color:var(--ac);border-color:var(--ac);background:transparent}
+/* Menú flotante de luces */
+.lmenu { position: fixed; z-index: 999; background: var(--card); border: 1px solid var(--ac); border-radius: 12px; padding: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.6); display: flex; flex-direction: column; gap: 8px; width: 236px; transform: translate(-50%, -100%); margin-top: -15px; pointer-events: auto; }
+.lmenu::after { content: ""; position: absolute; bottom: -6px; left: 50%; margin-left: -6px; border-width: 6px 6px 0; border-style: solid; border-color: var(--ac) transparent transparent; }
+.lmenu h4 { margin: 0 0 8px; font: 700 1.1rem "Barlow Condensed", sans-serif; color: var(--fg); text-transform: uppercase; text-align: center; }
+.lmenu button { background: var(--c2); border: 1px solid var(--bd); padding: 10px; border-radius: 6px; font-weight: 600; font-size: 0.9rem; margin:0; }
+.lmenu button.on { background: var(--ac); color: var(--acd); border-color: var(--ac); }
+.lmenu .lmh{margin:-4px 0 2px;text-align:center;color:var(--mut);font-size:.82rem}
+.lmenu .lmr{display:flex;gap:6px;align-items:end}.lmenu .lmr label{flex:1}.lmenu .lmr input{padding:8px}.lmenu .lmr button{padding:9px 10px}
+.lmenu .lmg{display:grid;grid-template-columns:1fr 1fr;gap:6px}.lmenu .lmg button{padding:9px 6px;font-size:.84rem}
+.lmenu .lml{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}.lmenu .lml button{padding:8px 4px;font-size:.78rem}
+.lmenu .lmx{position:absolute;top:6px;right:6px;width:30px;height:30px;padding:0!important;background:transparent!important;border:0!important;font-size:1.2rem!important;color:var(--mut)}
+#cwarn{margin:10px 0 0}
+.kplan svg{border:1px solid var(--bd);background:var(--c2)}
+.ke{display:grid;grid-template-columns:.8fr 1fr 1fr 1fr 1fr 36px;gap:6px;align-items:end;padding:8px 0;border-bottom:1px solid var(--bd)}.ke .kt{grid-column:1/3}.ke .km{grid-column:3/7}.ke:last-child{border-bottom:0}.ke label{font-size:.72rem}.ke input,.ke select{padding:8px 6px}.ke>*{min-width:0}
+.cr{display:grid;grid-template-columns:1fr 112px;gap:4px 10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--bd)}.cr:last-child{border-bottom:0}
+.cr b{font-weight:600}.cr .q{color:var(--mut);font-size:.82rem}.cr input{text-align:right;padding:8px}.cr .st{grid-column:1/-1;display:flex;justify-content:space-between;font-size:.85rem;color:var(--mut)}
+.cr .st span:last-child{color:var(--fg);font-weight:700;font-variant-numeric:tabular-nums}.cr .src{color:var(--ac);text-decoration:none}.cr .mis{color:#ff6b6b}
+.big{font:700 2.2rem/1.1 "Barlow Condensed",system-ui,sans-serif;color:var(--ac);font-variant-numeric:tabular-nums;margin:2px 0 6px}
+.tl{display:flex;justify-content:space-between;font-size:.92rem;padding:3px 0;color:var(--mut)}.tl b{color:var(--fg);font-variant-numeric:tabular-nums}
+#ctx{width:100%;height:150px;margin-top:10px;display:none;box-sizing:border-box}
+#toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:1000;background:var(--ac);color:var(--acd);font-weight:700;padding:10px 16px;border-radius:999px;box-shadow:0 6px 20px rgba(0,0,0,.5);max-width:calc(100% - 32px);text-align:center;font-size:.92rem}
+.lmenu #lmt{padding:0 28px;font-size:1rem;line-height:1.2}
+</style></head><body>
+<header class="top" id="top"><div class="brand"><svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true" style="border:0;margin:0"><rect x="2" y="2" width="22" height="22" rx="3" fill="none" stroke="#eceff1" stroke-width="2"/><path d="M2 14h12V2" fill="none" stroke="#ff7a1a" stroke-width="2.4"/></svg>Mueble modular</div><span id="chip" class="chip">—</span></header>
+<main>
+<div id="arov" hidden><p id="art"></p><div class="arb"><button type="button" id="arr">Girar 90°</button><button type="button" id="arx" class="pri">Salir</button></div></div>
+<section id="tg" hidden>
+<h1>Galería</h1><p class="s">Elige un mueble para empezar. Después lo editas a tu gusto en Diseño.</p>
+<div class="chips" id="gch" role="group" aria-label="Categorías"></div><div class="gal" id="gal"></div>
+</section>
+<section id="t1" hidden>
+<div class="vw" id="vw"><canvas id="cv" role="img" aria-label="Vista 3D del mueble"></canvas><button id="vo" type="button" class="vz vo" hidden>Abrir</button><button id="var" type="button" class="vz var" hidden aria-label="Ver el mueble con la cámara en realidad aumentada">RA</button><button id="vf" type="button" class="vz vfb" aria-label="Ver el mueble sobre una foto de tu espacio"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-2.5h6L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.4"/></svg></button><button id="vz" type="button" class="vz" aria-label="Agrandar o reducir el visor"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+  <input type="file" id="ff" accept="image/*" hidden>
+  <div id="fbar" class="fbar" hidden>
+    <p>Arrastra con un dedo para mover el mueble y pellizca con dos para cambiar su tamaño. Compáralo con algo que conozcas: una puerta mide unos 2 m de alto. Tu foto no sale de este teléfono.</p>
+    <label>Girar el mueble<input id="fr" type="range" min="-3.14" max="3.14" step="0.02" value="0.5"></label>
+    <label>Inclinación de la cámara<input id="fi" type="range" min="0.6" max="1.55" step="0.01" value="1.3"></label>
+    <div class="fb2"><button type="button" id="fc">Cambiar foto</button><button type="button" id="fs" class="pri">Guardar imagen</button><button type="button" id="fq">Salir</button></div>
+  </div>
+  <div id="lmenu" class="lmenu" hidden>
+    <button type="button" class="lmx" id="lmx" aria-label="Cerrar">×</button>
+    <h4 id="lmt">Espacio</h4><p class="lmh" id="lmh"></p>
+    <div class="lmr"><label>Alto libre (cm)<input id="lmi" type="number" inputmode="decimal" step="any"></label><button type="button" id="lmok">Fijar</button></div>
+    <div class="lmg"><button type="button" data-act="add">+ Repisa</button><button type="button" data-act="del">− Repisa</button><button type="button" data-act="split">Dividir columna</button><button type="button" data-act="drw" id="lmd">Cajones abajo</button></div>
+    <h4 style="margin:4px 0 0">Luz</h4>
+    <div class="lml"><button type="button" data-lt="0">Sin luz</button><button type="button" data-lt="1">Tira LED</button><button type="button" data-lt="2">Foco</button></div>
+  </div>
+</div>
+<div class="curw"><p id="cur"></p><button type="button" data-go="0">Cambiar de mueble</button></div>
+<p id="cm" class="cap" style="margin:8px 0 12px"></p>
+<div class="card"><h2>Medidas generales</h2><div class="g">
+<label id="lwt">Largo total (cm)<input id="wt" type="number" inputmode="decimal" step="any"></label>
+<button type="button" id="eq" class="ghost" style="margin:auto 0 0">Columnas iguales</button>
+<label id="lh"><span id="hl">Alto por defecto (cm)</span><input id="h" type="number" inputmode="decimal" step="any" value="73.6"></label>
+<label id="ld">Fondo (cm)<input id="d" type="number" inputmode="decimal" step="any" value="44.7"></label>
+<label>Grosor del tablero<select id="t"><option value="15">1,5 cm</option><option value="18" selected>1,8 cm</option></select></label>
+<label>Tablero<select id="sh"><option value="2440x1830">2,44 × 1,83 m</option><option value="2440x2150">2,44 × 2,15 m</option><option value="2500x1830">2,50 × 1,83 m</option><option value="2440x1220">2,44 × 1,22 m</option></select></label>
+<label>Grosor del corte (cm)<input id="kerf" type="number" inputmode="decimal" step="any" value="0.3"></label>
+</div><p class="cap" style="margin:8px 0 0">Al cambiar el largo, las columnas se agrandan o achican en proporción.</p></div>
+<div class="card"><h2>Construcción</h2><div class="g">
+<label style="grid-column:1/-1">Fondo del mueble<select id="fdo"><option value="igual">Del mismo tablero, dentro de la caja</option><option value="mdf3">MDF de 3 mm, clavado por detrás</option></select></label>
+<label style="grid-column:1/-1">Veta del tablero<select id="vt"><option value="libre">Libre: la app puede girar las piezas</option><option value="veta">Respetar la veta (maderados)</option></select></label>
+<p id="vtn" class="cap" style="grid-column:1/-1;margin:-4px 0 0"></p>
+<label>Refilado del tablero (cm por lado)<input id="rf" type="number" inputmode="decimal" step="0.1" min="0" value="0"></label><p class="cap" style="margin:auto 0 0">Borde que la maderera recorta del tablero. Pregúntalo: suele ser 0,5 a 1 cm.</p>
+<label style="grid-column:1/-1">Grosor del tapacanto (se descuenta de la medida de corte)<select id="tcs"><option value="0">No descontar</option><option value="0.45">0,45 mm (delgado)</option><option value="1">1 mm</option><option value="2">2 mm (grueso)</option></select></label>
+<label>Luz de puertas arriba y abajo (cm)<input id="hp" type="number" inputmode="decimal" step="0.05" value="0.3"></label>
+<label>Luz entre puertas (cm)<input id="hc2" type="number" inputmode="decimal" step="0.05" value="0.3"></label>
+<label>Luz entre cajones (cm)<input id="hf" type="number" inputmode="decimal" step="0.05" value="0.3"></label>
+</div><p class="cap" style="margin:8px 0 0">La "luz" es el espacio que se deja para que puertas y cajones abran sin rozar.</p></div>
+<div class="card" id="cardCoc" hidden><h2>Tu cocina</h2>
+<div id="kplan" class="kplan" aria-label="Planta de la cocina vista desde arriba"></div>
+<p class="cap" style="margin:6px 0 12px">Vista desde arriba. Café: muebles bajos (el número es su ancho en cm; C = cajonera, E = bajo la estufa de empotrar). Esq: esquinero, su parte oscura es el panel ciego que no abre; la rayita naranja es el relleno de 5 cm. Azul: lavaplatos. Línea punteada: aéreos. Celeste: ventana.</p>
+<div class="g">
+<label style="grid-column:1/-1">Forma<select id="kf"><option value="lineal">Lineal (una pared)</option><option value="L">En L (dos paredes)</option><option value="U">En U (tres paredes)</option></select></label>
+<label>Pared 1, la del fondo (cm)<input id="kp1" type="number" inputmode="decimal" step="any"></label>
+<label id="lkp2">Pared 2, izquierda (cm)<input id="kp2" type="number" inputmode="decimal" step="any"></label>
+<label id="lkp3">Pared 3, derecha (cm)<input id="kp3" type="number" inputmode="decimal" step="any"></label>
+<label>Ancho máximo de módulo (cm)<input id="kmw" type="number" inputmode="decimal" step="any"></label>
+<label>Alto de los bajos (cm)<input id="khb" type="number" inputmode="decimal" step="any"></label>
+<label>Fondo de los bajos (cm)<input id="kdb" type="number" inputmode="decimal" step="any"></label>
+<label>Zócalo (cm)<input id="kzo" type="number" inputmode="decimal" step="any"></label>
+<label>Grosor del mesón (cm)<input id="kmt" type="number" inputmode="decimal" step="any"></label>
+<label class="fl" style="grid-column:1/-1"><input type="checkbox" id="kae"> Muebles aéreos</label>
+<label>Alto de los aéreos (cm)<input id="kha" type="number" inputmode="decimal" step="any"></label>
+<label>Fondo de los aéreos (cm)<input id="kda" type="number" inputmode="decimal" step="any"></label>
+<label>Altura del piso a los aéreos (cm)<input id="kya" type="number" inputmode="decimal" step="any"></label>
+<label class="fl" style="margin-top:auto"><input type="checkbox" id="kcj"> Cajonera junto a la estufa</label>
+</div>
+<h2 style="margin-top:18px">Nevera, estufa, lavaplatos y ventanas</h2><p class="cap">Medidas en cm. «Desde» se mide en la pared 1 desde su extremo izquierdo, y en las paredes 2 y 3 desde la esquina con la pared 1. En nevera y estufa, «Espacio» es el hueco que les dejas (la app ya suma 2 cm por lado a la nevera). Los tamaños vienen de fichas de modelos que se venden en Colombia; si el tuyo es distinto, elige «Medida propia» y escribe las medidas de su ficha.</p>
+<div id="kel"></div><button type="button" id="kadd" class="ghost">+ Agregar elemento</button></div>
+<div class="card" id="cardMesa" hidden><h2>Mesa o escritorio</h2><div class="g">
+<label>Apoyo<select id="ma"><option value="paneles">Laterales de tablero</option><option value="cuadrada">Patas cuadradas</option><option value="redonda">Patas redondas</option><option value="conica">Patas cónicas</option></select></label>
+<label>Faldón<select id="mf"><option value="trasero">Atrás (tapa piernas)</option><option value="perimetral">Alrededor</option><option value="no">Sin faldón</option></select></label>
+<label>Alto del faldón (cm)<input id="mfh" type="number" inputmode="decimal" step="any" value="30"></label>
+<label class="fl" style="margin-top:auto"><input type="checkbox" id="mr"> Repisa abajo</label>
+<label>Cajonera<select id="mc"><option value="no">Sin cajonera</option><option value="der">A la derecha</option><option value="izq">A la izquierda</option></select></label>
+<label>Cajones<select id="mk"><option value="2">2</option><option value="3">3</option><option value="4">4</option></select></label>
+<label>Ancho de la cajonera (cm)<input id="mcw" type="number" inputmode="decimal" step="any" value="40"></label>
+</div><p class="cap" style="margin:8px 0 0">La tapa cubre todo el largo y el fondo. Las patas se compran hechas; los laterales y la cajonera salen del tablero.</p></div>
+<div class="card" id="cardSofa" hidden><h2>Sofá</h2><div class="g">
+<label style="grid-column:1/-1">Tipo<select id="sft"><option value="cajones">Sofá con cajones</option><option value="nido">Sofá cama nido (diván)</option></select></label>
+<label><span id="ssal">Alto del asiento con cojín (cm)</span><input id="ssa" type="number" inputmode="decimal" step="any" value="45"></label>
+<label>Alto de los brazos (cm)<input id="sbz" type="number" inputmode="decimal" step="any" value="60"></label>
+<label><span id="scel">Grosor del cojín del asiento (cm)</span><input id="sce" type="number" inputmode="decimal" step="any" value="12"></label>
+<label>Brazos<select id="sbt"><option value="recto">Rectos (un tablero)</option><option value="caja">Caja (anchos y cerrados)</option><option value="repisa">Con repisas (anchos y abiertos)</option></select></label>
+<label id="lsaw" hidden>Ancho del brazo (cm)<input id="saw" type="number" inputmode="decimal" step="any" value="15"></label>
+<label id="lsk">Cajones<select id="sk"><option value="2">2</option><option value="3">3</option><option value="4">4</option></select></label>
+<label id="lsmc" hidden>Colchón de arriba<select id="smc"><option value="900">90 × 190</option><option value="1000">100 × 190</option><option value="1200">120 × 190</option></select></label>
+<label id="lsnw" hidden>Colchón del nido: ancho (cm)<input id="snw" type="number" inputmode="decimal" step="any" value="90"></label>
+<label id="lsnl" hidden>Colchón del nido: largo (cm)<input id="snl" type="number" inputmode="decimal" step="any" value="180"></label>
+<label id="lsnt" hidden>Colchón del nido: grosor (cm)<input id="snt" type="number" inputmode="decimal" step="any" value="12"></label>
+</div><p class="cap" id="scap" style="margin:8px 0 0"></p></div>
+<div class="card" id="cardCols"><h2>Columnas</h2><p class="cap">Ancho interior, contenido y, si quieres, alto propio de cada columna. En cajones, escribe alturas relativas de abajo hacia arriba (3 2 1) y se ajustan solas al alto.</p>
+<div id="cols"></div><p id="cwarn" class="warn" hidden></p><button id="add" type="button" class="ghost">+ Agregar columna</button></div>
+<div class="card" id="cardBase"><h2>Base del mueble</h2><div class="g">
+<label>Tipo<select id="bt"><option value="piso">Apoyado en el piso</option><option value="redonda">Patas redondas</option><option value="conica">Patas cónicas</option><option value="cuadrada">Patas cuadradas</option><option value="zocalo">Zócalo (base cerrada)</option><option value="flotante">Flotante (colgado)</option></select></label>
+<label id="bhl" hidden><span id="bhs">Altura de las patas (cm)</span><input id="bh" type="number" inputmode="decimal" step="any" value="15"></label>
+</div><p class="cap" id="bn" style="margin:8px 0 0"></p></div>
+<div class="card" id="cardLuz"><h2>Luces LED y Focos</h2><div class="g"><label class="fl" style="grid-column:1/-1"><input type="checkbox" id="lw"> Luz bajo el mueble (se nota con patas o flotante)</label></div>
+<p class="cap" style="margin:8px 0">Para añadir luz dentro del mueble, <b>toca el espacio directamente en el visor 3D</b>.</p>
+<div class="g g2"><label>Color de la luz<select id="lt"><option value="2700">Cálida 2700 K</option><option value="3000" selected>Cálida suave 3000 K</option><option value="4000">Neutra 4000 K</option><option value="6000">Fría 6000 K</option></select></label>
+<label>Intensidad<input id="li" type="range" min="10" max="100" step="5" value="70"></label></div></div>
+<div class="card"><h2>Acabado y vista</h2><label>Acabado de melamina<select id="fin"></select></label><p class="note" style="margin:6px 0 12px">Colores aproximados; el tono real cambia según la marca y la pantalla.</p>
+<label>Vista explosionada<input id="ex" type="range" min="0" max="1" step="0.05" value="0"></label>
+<label style="flex-direction:row;align-items:center;gap:10px;margin-top:12px;font-size:.95rem;color:var(--fg)"><input type="checkbox" id="lb"> Mostrar el número de todas las piezas</label>
+<label style="flex-direction:row;align-items:center;gap:10px;margin-top:12px;font-size:.95rem;color:var(--fg)"><input type="checkbox" id="lu" checked> Luces encendidas (si el mueble tiene luces)</label></div>
+<div class="card"><h2>Armado paso a paso</h2><p class="cap" style="margin-bottom:8px">Gira el mueble con un dedo y acércalo con dos. Cada pieza lleva el número de la lista de corte.</p>
+<div class="bar"><button id="pv" type="button">Anterior</button><span id="sl"></span><button id="nx" type="button" class="pri">Siguiente</button></div><p id="st"></p></div>
+<button class="cta" type="button" data-go="2">Ver cortes</button>
+</section>
+<section id="t3" hidden>
+<h1>Cortes</h1><p class="s">Lo que le pides al carpintero, en cm.</p>
+<div id="sum"></div><div id="out" class="out"></div>
+</section>
+<section id="t5" hidden>
+<h1>Costos</h1><p class="s">Cuánto cuesta este mueble. Los precios de referencia son de Homecenter (consultados el 11 de noviembre de 2026); cámbialos por los de tu maderera o ferretería.</p>
+<div class="card" id="ctot"></div>
+<div class="card"><h2>Materiales y herrajes</h2><div id="clist"></div></div>
+<div class="card" id="creg"><h2>Reglas de herrajes</h2>
+<p class="cap" style="margin:0 0 10px">Las bisagras siguen la tabla de la guía de muebles de Arauco Colombia: hasta 0,9 m de alto o 7 kg, 2; hasta 1,6 m o 12 kg, 3; hasta 2 m o 16 kg, 4; hasta 2,4 m o 22 kg, 5. El peso se calcula con la densidad del tablero Vesto (550 kg/m³). Las correderas usan los largos de 30 a 65 cm de Homecenter. Los tornillos y puntillas siguen una regla práctica de carpintería: ajústala con tu carpintero.</p>
+<div class="g"><label style="grid-column:1/-1">Tornillo de ensamble<select id="rtt"><option value="4x50">Tornillo para madera 4 × 50 mm</option><option value="7x50">Confirmat 7 × 50 mm</option></select></label>
+<label>Un tornillo cada (cm)<input id="rsp" type="number" inputmode="decimal" step="any"></label>
+<label>Entre módulos, uno cada (cm)<input id="rsm" type="number" inputmode="decimal" step="any"></label>
+<label>Puntillas del fondo cada (cm)<input id="rsf" type="number" inputmode="decimal" step="any"></label>
+<label>Extra para pérdidas (%)<input id="rex" type="number" inputmode="decimal" step="any"></label></div>
+<p class="cap" id="rsum" style="margin:10px 0 0"></p><button type="button" id="rdef" class="ghost">Volver a las reglas de siempre</button></div>
+<div class="card"><h2>Servicios y ganancia</h2><div id="csrv"></div>
+<label style="margin-top:12px">Ganancia o margen (%)<input id="cmg" type="number" inputmode="decimal" step="any" min="0" value="0"></label></div>
+<button type="button" id="cref" class="ghost">Volver a los precios de referencia</button>
+<button type="button" id="ccp" class="ghost">Copiar presupuesto</button><textarea id="ctx" readonly></textarea>
+<p class="note">El precio de Homecenter cambia según la ciudad, la tienda y las promociones del día. Un tablero de 18 mm suele costar más que la referencia de 15 mm. Las madereras muchas veces incluyen el corte y el pegado de tapacanto.</p>
+</section>
+<section id="t4" hidden>
+<h1>Entrega</h1><p class="s">Un PDF claro para llevar a la carpintería.</p>
+<div class="card"><h2>El PDF incluye</h2><ul class="l"><li>Resumen y vista de frente con medidas</li><li>Lista de cortes con dibujo y tapacanto de cada pieza</li><li>Acomodo de las piezas en los tableros</li><li>Qué comprar y glosario de palabras</li><li>Mapa de piezas y armado paso a paso en 3D</li></ul>
+<button id="pdf" type="button" class="cta">Descargar PDF para la carpintería</button><p id="pm" class="cap" style="margin:8px 0 0"></p></div>
+<div class="card"><h2>Proyecto</h2><p class="cap" id="sv">Se guarda solo en este dispositivo.</p>
+<button id="pe" type="button" class="ghost" style="margin-top:0">Guardar copia (archivo)</button>
+<button id="pi" type="button" class="ghost">Abrir copia</button><input type="file" id="pf" accept=".json,application/json" hidden>
+<button id="pr" type="button" class="ghost">Empezar de nuevo</button><p id="pn" class="cap" style="margin:8px 0 0"></p></div>
+<div class="card"><h2>Lista en Excel o texto</h2><p class="cap">Descarga la lista en Excel para tu maderera (hojas: cortes, compras, resumen y presupuesto) o cópiala como texto para mandarla por mensaje.</p><button id="xl" type="button" class="cta" style="margin-top:0">Descargar Excel</button><p id="xm" class="cap" style="margin:8px 0 0"></p><button id="cp" type="button" class="ghost">Copiar lista de corte</button><textarea id="txt" readonly></textarea></div>
+<p class="note">Los cálculos siguen el despiece del Mueble Moderno #01 de la guía (laterales de altura completa, techo y piso entre laterales, trasera dentro de la caja, puertas y frentes que cubren el borde). Confirma el grosor del corte y las vetas con tu aserradero.</p>
+</section>
+</main>
+<div id="toast" role="status" hidden></div>
+<nav id="nav" aria-label="Secciones">
+<button type="button" data-go="0" aria-selected="true"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1"/><rect x="13" y="4" width="7" height="7" rx="1"/><rect x="4" y="13" width="7" height="7" rx="1"/><rect x="13" y="13" width="7" height="7" rx="1"/></svg>Galería</button>
+<button type="button" data-go="1" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9zM12 12l8-4.5M12 12v9M12 12L4 7.5"/></svg>Diseño</button>
+<button type="button" data-go="2" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="1"/><path d="M4 12h16M12 4v16"/></svg>Cortes</button>
+<button type="button" data-go="4" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M14.8 9.2c-.5-.9-1.6-1.4-2.8-1.4-1.6 0-2.8.8-2.8 2.1 0 2.9 5.8 1.5 5.8 4.3 0 1.3-1.3 2.2-3 2.2-1.3 0-2.5-.6-3-1.6M12 6v1.8M12 16.4V18"/></svg>Costos</button>
+<button type="button" data-go="3" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h7l4 4v14H7zM14 3v4h4"/></svg>PDF</button>
+</nav>
+<script src="three.min.js"></script>
+<script src="jspdf.umd.min.js"></script>
+<script>
+const $=i=>document.getElementById(i),r1=x=>Math.round(x*10)/10,f=x=>String(Math.round(x*10)/100).replace(".",",");
+const TY={P:"Puertas",PC:"Puertas + cajones",C2:"2 cajones",C3:"3 cajones",C4:"4 cajones",A:"Abierto"},MC={P:2,C1:1,C2:2,C3:3,C4:4,A:2};
+let proj=null,cfg=null,cols=null,B=null,st=1,stFull=true,lastText="";
+function ed(){$("cols").innerHTML=cols.map((c,i)=>`<div class="cb"><div class="row"><b>${i+1}</b><input type="number" inputmode="decimal" step="any" class="cw" data-i="${i}" value="${c.w/10}" aria-label="Ancho columna ${i+1}"><select class="ct" data-i="${i}" aria-label="Contenido columna ${i+1}">${Object.keys(TY).map(k=>`<option value="${k}"${k==c.t?" selected":""}>${TY[k]}</option>`).join("")}</select><button type="button" class="rm" data-i="${i}" aria-label="Quitar columna ${i+1}">×</button></div><div class="r2"><label>Alto (cm)<input type="number" inputmode="decimal" step="any" class="ch" data-i="${i}" value="${c.h?c.h/10:""}" placeholder="el de arriba" aria-label="Alto columna ${i+1}"></label>${c.t=="PC"?`<label>Cajones abajo<input type="number" inputmode="numeric" min="1" max="6" class="ck" data-i="${i}" value="${c.k||2}" aria-label="Cajones abajo columna ${i+1}"></label><label>Alto zona de cajones (cm)<input type="number" inputmode="decimal" step="any" class="cz" data-i="${i}" value="${c.kz?r1(c.kz/10):""}" placeholder="auto" aria-label="Alto zona de cajones columna ${i+1}"></label>`:""}${c.t[0]=="C"?`<label>Alturas de cajones<input type="text" class="cd" data-i="${i}" value="${c.d||""}" placeholder="ej. 3 2 1 (vacío = iguales)" aria-label="Alturas relativas de cajones columna ${i+1}"></label>`:`<label>Repisas${c.t=="PC"?" arriba":""}<input type="number" inputmode="numeric" min="0" max="11" class="cn" data-i="${i}" value="${c.n!=null?c.n:""}" placeholder="auto" aria-label="Número de repisas columna ${i+1}"></label><label style="grid-column:1/-1">Alto libre de cada espacio, de abajo hacia arriba (cm)<input type="text" class="cs" data-i="${i}" value="${(c.s||[]).map(v=>v?String(r1(v/10)).replace(".",","):"").join(" ").trim()}" placeholder="ej. 40 (vacío = iguales)" aria-label="Altos libres columna ${i+1}"></label><span style="grid-column:1/-1;font-size:0.8rem;color:var(--mut)">O toca un espacio en el 3D para repisas y luz.</span>`}</div></div>`).join("")}
+$("cols").addEventListener("input",e=>{const c=cols[+e.target.dataset.i],k=e.target.classList;if(k.contains("cw"))c.w=(parseFloat(e.target.value)||0)*10;else if(k.contains("ch"))c.h=(parseFloat(e.target.value)||0)*10;else if(k.contains("cd"))c.d=e.target.value;else if(k.contains("ck")){c.k=Math.max(1,Math.min(6,Math.round(+e.target.value)||2))}else if(k.contains("cz")){const v=parseFloat(e.target.value);c.kz=v>0?v*10:undefined}else if(k.contains("cn")){const v=e.target.value.trim();c.n=v===""?undefined:Math.max(0,Math.min(11,Math.round(+v)||0))}else if(k.contains("cs")){c.s=e.target.value.trim().split(/\s+/).map(z=>parseFloat(z.replace(",","."))||0).map(z=>z>0?z*10:0)}else{c.t=e.target.value;ed()}calc()});
+$("cols").addEventListener("click",e=>{if(e.target.classList.contains("rm")&&cols.length>1){cols.splice(+e.target.dataset.i,1);ed();calc()}});
+$("add").onclick=()=>{cols.push({w:600,t:"P",l:[]});ed();calc()};
+document.querySelectorAll(".g input,.g select").forEach(e=>{if(e.closest("#creg"))return;e.addEventListener("input",()=>{readUI();calc()})});
+function build(cfg){return cfg.kind=="sofa"?buildSofa(cfg):cfg.kind=="mesa"?buildMesa(cfg):cfg.kind=="cocina"?buildCocina(cfg):buildCaja(cfg)}
+const DENS=550;function pesoP(h,w,t){return h*w*t*DENS*1e-9+.3}
+function nBis(h,w,t){const kg=pesoP(h,w,t),a=h<=900?2:h<=1600?3:h<=2000?4:5,b=kg<=7?2:kg<=12?3:kg<=16?4:5;return Math.max(a,b)}
+function creg(r){r=r||{};const n=(v,d,a,b)=>isFinite(+v)&&+v>=a&&+v<=b?+v:d;return{tt:r.tt=="7x50"?"7x50":"4x50",sp:n(r.sp,150,50,400),sm:n(r.sm,300,100,800),sf:n(r.sf,100,30,300),ex:n(r.ex,10,0,50)}}
+function hwCalc(Bx,R){R=creg(R);const NO=["Puerta","Frente","Cajón","Panel ciego","Relleno","Fondo"],P=Bx.parts.filter(p=>!p.fx&&!NO.includes(p.nm)),bx=P.map(p=>[p.x,p.y,p.z,p.x+p.sx,p.y+p.sy,p.z+p.sz,Math.min(p.sx,p.sy,p.sz)]);
+let ne=0,nf=0,je=0,jf=0;const sc=(L,sp)=>Math.max(2,Math.floor(L/sp)+1);
+for(let i=0;i<P.length;i++)for(let j=i+1;j<P.length;j++){const a=bx[i],b=bx[j],ov=[];let tch=-1,ok=true;for(let k=0;k<3;k++){const o=Math.min(a[k+3],b[k+3])-Math.max(a[k],b[k]);if(Math.abs(o)<=.6){if(tch>=0){ok=false;break}tch=k}else if(o>5)ov.push(o);else{ok=false;break}}
+if(!ok||tch<0||ov.length!=2)continue;const L=Math.max(...ov);if(Math.min(...ov)<=Math.max(a[6],b[6])+1){ne+=sc(L,R.sp);je++}else{nf+=sc(L,R.sm);jf++}}
+let nd=0,pn=0;Bx.parts.filter(p=>p.nm=="Cajón").forEach(p=>{nd+=4*sc(p.sy,R.sp);pn+=Math.ceil(2*(p.sx+p.sz)/R.sf)});
+Bx.parts.filter(p=>p.nm=="Fondo").forEach(p=>{const q=[p.sx,p.sy,p.sz].sort((x,y)=>y-x);pn+=Math.ceil(2*(q[0]+q[1])/R.sf)});
+const x=v=>Math.ceil(v*(1+R.ex/100));return{R,je,jf,ens:x(ne+nd),mod:x(nf),pun:x(pn),ensB:ne+nd,modB:nf,punB:pn}}
+function buildCaja(cfg){
+const cols=cfg.cols,t=cfg.t,H0=cfg.H,n=cols.length,Wi=cols.reduce((a,c)=>a+c.w,0)+(n-1)*t,W=Wi+2*t,warn=[];
+const fb=cfg.fondo=="mdf3"?3:0,D=cfg.D-fb,bk=fb?0:t,tc=+cfg.tc||0,hol=cfg.hol||{p:3,c:3,f:3},HP=hol.p,HC=hol.c,HF=hol.f;
+const hc=cols.map(c=>c.h||H0),Hm=Math.max(...hc),M=new Map(),parts=[],steps=[];
+const add=(nm,q,L,A,th,eL,eA)=>{const dc=th==t&&tc>0,Lc=dc?L-eA*tc:L,Ac=dc?A-eL*tc:A,k=[nm,r1(Lc),r1(Ac),th].join("|"),o=M.get(k);if(o)o.q+=q;else M.set(k,{nm,q,L:r1(Lc),A:r1(Ac),Lf:r1(L),Af:r1(A),th,eL,eA})};
+const box=(nm,s,x,y,z,sx,sy,sz,c,ex)=>parts.push({nm,s,x,y,z,sx,sy,sz,c,ex});
+const hdl=(s,x,y,sx,sy)=>parts.push({nm:"Tirador",s,x,y,z:D+t,sx,sy,sz:22,c:0xc2c7cc,ex:[0,0,1.9],nomap:1,fx:1});
+const S_=x=>{steps.push(x);return steps.length},cx=[];let x=t;cols.forEach(c=>{cx.push(x);x+=c.w+t});
+const upS=(c,i,Hi,mn)=>{const m=Math.min(12,c.n!=null&&c.n>=0?Math.round(c.n)+1:Math.max(mn,Math.round(Hi/400))),av=Hi-(m-1)*t,fx=Array.from({length:m},(_,j)=>+((c.s||[])[j])>0?+c.s[j]:0);
+if(fx.every(v=>v>0))fx[m-1]=0;const sf=fx.reduce((a,b)=>a+b,0),nf=fx.filter(v=>!v).length,rest=(av-sf)/nf;
+if(sf>0&&(rest<50||fx.some(v=>v&&v<50))){warn.push("Columna "+(i+1)+": las alturas escritas no caben en "+f(av)+" cm libres; se reparten iguales.");return Array(m).fill(av/m)}
+return fx.map(v=>v||rest)};
+const kd=cols.map(c=>c.t[0]=="C"?-1:c.t=="PC"?Math.max(1,Math.min(6,Math.round(+c.k||2))):0);
+const comp=cols.map((c,i)=>{const Hi=hc[i]-2*t,isC=c.t[0]=="C";
+if(isC){const nums=(c.d||"").split(/[\s,;]+/).map(parseFloat).filter(z=>z>0),m=nums.length>1?Math.min(nums.length,8):MC[c.t],w=nums.length>1?nums.slice(0,m):Array(m).fill(1),sw=w.reduce((a,b)=>a+b,0),av=Hi-(m-1)*t;return w.map(z=>av*z/sw)}
+if(c.t=="PC"){const k=kd[i],lo=k*80+(k-1)*t,hi=Hi-t-150;let kz=+c.kz>0?+c.kz:Math.min(Hi*.4,k*180+(k-1)*t);if(kz<lo||kz>hi){warn.push("Columna "+(i+1)+": la zona de cajones debe medir entre "+f(lo)+" y "+f(hi)+" cm; se ajustó.");kz=Math.max(lo,Math.min(hi,kz))}
+const dz=(kz-(k-1)*t)/k;return Array(k).fill(dz).concat(upS(c,i,Hi-kz-t,1))}
+return upS(c,i,Hi,2)});
+const nD=i=>kd[i]<0?comp[i].length:kd[i];
+const runs=[];cols.forEach((c,i)=>{const L=runs[runs.length-1];if(L&&hc[L.a]==hc[i])L.b=i;else runs.push({a:i,b:i})});
+const rw=r=>{let s=0;for(let i=r.a;i<=r.b;i++)s+=cols[i].w;return s+(r.b-r.a)*t};
+const sz0=cfg.sheet.split("x").map(Number),rfb=2*(+cfg.ref||0),fit=(a,b)=>Math.max(a,b)<=sz0[0]-rfb&&Math.min(a,b)<=sz0[1]-rfb;
+const bkp=r=>{const w=rw(r),hi=hc[r.a]-2*t;if(fit(w,hi))return[{x:cx[r.a],w}];const a=[];for(let i=r.a;i<=r.b;i++)a.push({x:cx[i],w:cols[i].w+(i<r.b?t:0)});return a};
+const bkx=r=>{const x0=cx[r.a]-(r.a==0?t:t/2),x1=cx[r.b]+cols[r.b].w+(r.b==n-1?t:t/2),h=hc[r.a];if(fit(x1-x0,h))return[{x:x0,w:x1-x0,h}];const a=[];for(let i=r.a;i<=r.b;i++){const u0=cx[i]-(i==0?t:t/2),u1=cx[i]+cols[i].w+(i==n-1?t:t/2);a.push({x:u0,w:u1-u0,h})}return a};
+const shv=comp.reduce((a,m)=>a+m.length-1,0),drw=cols.reduce((a,c,i)=>a+nD(i),0),W0=0xd2b48c,pl=runs.length>1;
+let hing=0,pull=0,slideL=0,nLegs=0,nHang=0,ledLen=0;const bs=cfg.base||{t:"piso",h:0},lz=cfg.luz||{w:false,k:3000,i:70},yo=bs.t=="piso"?0:bs.h,isLeg=["redonda","conica","cuadrada"].includes(bs.t),legH=isLeg?bs.h:0,zoc=bs.t=="zocalo";
+if(zoc){const zs=S_("Arma el zócalo: une el frente, la pieza de atrás y los travesaños con tornillos. Revisa que quede a escuadra y nivelado.");const zl=D-50-2*t,k=Math.max(0,Math.ceil(W/900)-1);
+box("Zócalo",zs,0,-yo,D-50-t,W,yo,t,W0,[0,-1,.5]);box("Zócalo",zs,0,-yo,0,W,yo,t,W0,[0,-1,-.5]);for(let i=0;i<k+2;i++)box("Zócalo travesaño",zs,i==0?0:i==k+1?W-t:(W-t)*i/(k+1),-yo,t,t,yo,zl,W0,[0,-1,0]);
+add("Zócalo frente y atrás",2,W,yo,t,0,0);add("Zócalo travesaño",k+2,zl,yo,t,0,0)}
+const s1=S_("Une los laterales con "+(pl?"los pisos":"el piso")+" usando tornillos 4×50."+(legH?" Después atornilla las patas.":"")+(zoc?" Luego apoya la caja sobre el zócalo y atorníllala desde adentro.":""));
+box("Lateral",s1,0,0,0,t,hc[0],D,W0,[-1,0,0]);box("Lateral",s1,W-t,0,0,t,hc[n-1],D,W0,[1,0,0]);
+add("Lateral",1,hc[0],D,t,1,0);add("Lateral",1,hc[n-1],D,t,1,0);
+if(legH){const nr=Math.max(2,Math.ceil(W/1000)+1),gp=bs.t=="redonda"?"cyl":bs.t=="conica"?"cone":"box",ds=50;nLegs=nr*2;
+for(let r=0;r<2;r++)for(let i=0;i<nr;i++)parts.push({nm:"Pata",s:s1,x:40+i*(W-80-ds)/(nr-1),y:-legH,z:r?D-40-ds:40,sx:ds,sy:legH,sz:ds,c:0x2a2d30,ex:[0,-1,0],g:gp,nomap:1,fx:1})}
+if(bs.t!="piso")parts.push({nm:"Suelo",s:s1,x:-400,y:-yo-12,z:-100-fb,sx:W+800,sy:12,sz:D+fb+500,c:0x5a6168,ex:[0,0,0],nomap:1,fx:1,op:.55});
+if(bs.t=="flotante")parts.push({nm:"Pared",s:s1,x:-400,y:-yo-12,z:-22-fb,sx:W+800,sy:Hm+yo+400,sz:22,c:0x8d969d,ex:[0,0,0],nomap:1,fx:1,op:.4});
+runs.forEach(r=>{const w=rw(r);box("Piso",s1,cx[r.a],0,0,w,t,D,W0,[0,-1,0]);add("Techo y piso",2,w,D,t,1,0);if(fb)bkx(r).forEach(q=>add("Fondo MDF (0,3 cm)",1,q.w-2,q.h-2,3,0,0));else bkp(r).forEach(q=>add("Trasera",1,q.w,hc[r.a]-2*t,t,0,0))});
+if(n>1){const s=S_("Pon las "+(n-1)+" divisiones verticales sobre el piso, a ras del frente.");
+for(let i=0;i<n-1;i++){const hd=Math.max(hc[i],hc[i+1])-2*t;box("División",s,cx[i]+cols[i].w,t,bk,t,hd,D-bk,W0,[0,.5,0]);add("División vertical",1,hd,D-bk,t,1,0)}}
+const s3=S_("Fija los "+shv+" estantes fijos entre laterales y divisiones ("+f(D-bk)+" cm de fondo).");
+cols.forEach((c,i)=>{const cs=comp[i];let y=t;for(let j=0;j<cs.length-1;j++){y+=cs[j];box("Estante",s3,cx[i],y,bk,c.w,t,D-bk,W0,[0,.3,.6]);parts[parts.length-1].ci=i;add("Estante fijo",1,c.w,D-bk,t,1,0);y+=t}});
+const s4=S_("Coloca "+(pl?"los techos":"el techo")+" sobre laterales y divisiones.");
+runs.forEach(r=>box("Techo",s4,cx[r.a],hc[r.a]-t,0,rw(r),t,D,W0,[0,1,0]));
+if(fb){const L5=runs.reduce((a,r)=>a.concat(bkx(r)),[]),s5=S_("Mide las dos diagonales del frente: si son iguales, el mueble está a escuadra. Luego clava o grapa "+(L5.length>1?"los "+L5.length+" fondos":"el fondo")+" de 3 mm por detrás.");L5.forEach(q=>box("Fondo",s5,q.x+1,1,-fb,q.w-2,q.h-2,fb,0xc4a574,[0,0,-1]))}
+else{const nbk=runs.reduce((a,r)=>a+bkp(r).length,0),s5=S_(nbk>1?"Atornilla las "+nbk+" traseras desde atrás, dentro de la caja.":"Atornilla la trasera desde atrás, dentro de la caja.");
+runs.forEach(r=>bkp(r).forEach(q=>box("Trasera",s5,q.x,t,0,q.w,hc[r.a]-2*t,t,0xc4a574,[0,0,-1])))}
+const ledP=[],spaces=[];cols.forEach((c,i)=>{if(c.t[0]=="C")return;const k0=nD(i),cs=comp[i].slice(k0),ls=normL(c.l);let yb=t+comp[i].slice(0,k0).reduce((a,v)=>a+v+t,0);cs.forEach((ch,j)=>{const ty=ls[j]||0;
+if(ty==1)ledP.push({x:cx[i]+10,y:yb+ch-8,z:D-48,sx:c.w-20,sy:4,sz:14});else if(ty==2)ledP.push({x:cx[i]+c.w/2-20,y:yb+ch-6,z:(D+bk)/2-20,sx:40,sy:6,sz:40,spot:1});
+spaces.push({i,j,x:cx[i],y:yb,z:bk,sx:c.w,sy:ch,sz:D-bk,m:cs.length});yb+=ch+t})});
+const nSpot=ledP.filter(l=>l.spot).length,nStrip=ledP.length-nSpot;
+if(lz.w&&(isLeg||bs.t=="flotante"))ledP.push({x:50,y:-5,z:D-70,sx:W-100,sy:4,sz:14,under:1});
+if(ledP.length){const sl=S_([nStrip?"Pega "+(nStrip>1?"las "+nStrip+" tiras LED":"la tira LED"):"",nSpot?"Instala "+(nSpot>1?"los "+nSpot+" focos empotrados":"el foco empotrado"):""].filter(Boolean).join(" y ")+" en los puntos que brillan y conecta la fuente de alimentación.");ledP.forEach(l=>{if(!l.spot)ledLen+=l.sx;parts.push({nm:"LED",s:sl,x:l.x,y:l.y,z:l.z,sx:l.sx,sy:l.sy,sz:l.sz,c:0xffffff,ex:l.under?[0,-1,0]:[0,0,.8],g:l.spot?"ledc":"led",nomap:1,fx:1,under:l.under,spot:l.spot})})}
+let s6=0,s7=0,s8=0;
+if(drw){s6=S_("Arma cada cajón y monta las correderas ("+drw+" pares).");s7=S_("Pon los frentes de cajón con "+f(HF)+" cm de luz entre ellos.")}
+if(cols.some(c=>c.t=="P"||c.t=="PC"))s8=S_("Cuelga las puertas con sus bisagras y coloca los tiradores.");
+cols.forEach((c,i)=>{const cs=comp[i];
+if(nD(i)){const bw=c.w-26,ll=Math.min(cfg.dl||1e9,Math.floor((D-bk-20)/50)*50+10);slideL=ll-10;let y0=t;
+cs.slice(0,nD(i)).forEach(ch=>{const bh=Math.max(60,ch-35);
+box("Cajón",s6,cx[i]+13,y0+12,D-5-ll,bw,bh,ll,0xe8d6b4,[0,0,1]);
+box("Frente",s7,cx[i]-t/2+HF/2,y0-t/2+HF/2,D,c.w+t-HF,ch+t-HF,t,0xc9a46b,[0,0,1.7]);{const hw=Math.min(160,c.w*.4);hdl(s7,cx[i]+c.w/2-hw/2,y0+ch/2-6,hw,12)}parts.slice(-3).forEach(q=>q.mv=[0,0,Math.round(ll*.75)]);
+add("Frente de cajón",1,ch+t-HF,c.w+t-HF,t,2,2);add("Lateral de cajón",2,ll,bh,t,0,0);add("Trasera de cajón",1,bw-2*t,bh,t,0,0);add("Fondo de cajón (0,6 cm)",1,ll,bw,6,0,0);pull++;y0+=ch+t})}
+if(c.t=="P"||c.t=="PC"){const pc=c.t=="PC",nd=c.w>600?2:1,dw=c.w+t+4.5,e=nd==1?dw:(dw-HC)/2,h=hc[i],y0d=pc?t+comp[i].slice(0,nD(i)).reduce((a,v)=>a+v+t,0)-t/2+HF/2:HP,dh=h-HP-y0d,hl=Math.min(300,dh*.3),hy=pc?Math.max(y0d+60,Math.min(1000,y0d+dh-hl-50)):(h>1200?1000:HP+dh-hl-50);
+for(let k=0;k<nd;k++){const dx=cx[i]+c.w/2-dw/2+k*(e+HC);box("Puerta",s8,dx,y0d,D,e,dh,t,0xc9a46b,[0,0,1.7]);if(normL(c.l).some(v=>v))parts[parts.length-1].lit=1;hdl(s8,nd==2&&k==1?dx+28:dx+e-40,hy,12,hl)}
+add("Puerta",nd,dh,e,t,2,2);hing+=nd*nBis(dh,e,t);if(dh>2400||pesoP(dh,e,t)>22)warn.push("Columna "+(i+1)+": la puerta mide "+f(dh)+" cm de alto y pesa unos "+String(Math.round(pesoP(dh,e,t))).replace(".",",")+" kg; pasa la tabla de bisagras (hasta 2,4 m o 22 kg). Divídela en dos puertas o consulta al fabricante.");pull+=nd}});
+const rows=[...M.values()],fd=(nms,a,b)=>{const hi=Math.max(a,b),lo=Math.min(a,b);return rows.findIndex(r=>nms.includes(r.nm)&&Math.abs(Math.max(r.Lf,r.Af)-hi)<.2&&Math.abs(Math.min(r.Lf,r.Af)-lo)<.2)+1};
+parts.forEach(p=>{if(p.nm=="Cajón"){const q=[fd(["Lateral de cajón"],p.sz,p.sy),fd(["Trasera de cajón"],p.sx-2*t,p.sy),fd(["Fondo de cajón (0,6 cm)"],p.sz,p.sx)].filter(Boolean);p.lb=q.length?"Cajón "+q.map(z=>"#"+z).join(" "):"Cajón"}else{const q=[p.sx,p.sy,p.sz].sort((a,b)=>b-a);p.n=fd(MP[p.nm]||[],q[0],q[1])}});
+if(bs.t=="flotante"){nHang=Math.max(2,Math.ceil(W/800));const sh=S_("Fija los "+nHang+" soportes a un muro firme y cuelga el mueble. Revisa que quede nivelado.");for(let i=0;i<nHang;i++)parts.push({nm:"Soporte",s:sh,x:60+i*(W-200)/(nHang-1),y:Hm-t-70,z:t,sx:80,sy:50,sz:10,c:0x2a2d30,ex:[0,.5,0],nomap:1,fx:1})}
+if(yo){parts.forEach(p=>{p.y+=yo});spaces.forEach(q=>{q.y+=yo})}
+if(fb){parts.forEach(p=>{if(p.nm!="Suelo"&&p.nm!="Pared")p.z+=fb});spaces.forEach(q=>{q.z+=fb})}
+return{rows,parts,steps,W,H:Hm+(bs.t=="flotante"?0:yo),top:Hm+yo,lift:bs.t=="flotante"?yo:0,D:cfg.D,t,tc,fb,hing,drw,pull,slideL,nLegs,legT:bs.t,legH,nHang,ledLen,nSpot,spaces,warn}}
+
+
+const KEL={nevera:"Nevera",estufa:"Estufa de piso",cubierta:"Estufa de empotrar",lavaplatos:"Lavaplatos",ventana:"Ventana"};
+const KPRE={nevera:[["≈250 L · 62×161×70",660,1610,700],["≈300 L · 62×178×70",660,1780,700],["≈450 L · 71×186×75",750,1860,760],["Side by side · 91×179×75",950,1790,760]],estufa:[["76 cm · 77×103×62",780,1030,620]],cubierta:[["Empotrar 60 · corte 57×47",600,0,510]],lavaplatos:[["Poceta 53×43 (mueble 60)",600,0,0],["82×47 (mueble 90)",900,0,0]],ventana:[]};
+const KD={nevera:[660,1780,700],estufa:[780,1030,620],cubierta:[600,0,510],lavaplatos:[900,0,0],ventana:[1000,0,0]},KHB={nevera:[800,2400],estufa:[700,1300]},KDB={nevera:[400,1000],estufa:[400,800],cubierta:[300,700]};
+function ccoc(k){k=k||{};const n=(v,d,a,b)=>isFinite(+v)&&+v>=a&&+v<=b?+v:d,fo=["lineal","L","U"].includes(k.forma)?k.forma:"L",p=Array.isArray(k.p)?k.p:[];
+const P=[n(p[0],3000,600,10000),n(p[1],2000,600,10000),n(p[2],2000,600,10000)];
+const el=(Array.isArray(k.el)?k.el:[{t:"nevera",w:1,u:2340,a:660,h:1780,d:700},{t:"ventana",w:1,u:1000,a:1000},{t:"lavaplatos",w:1,u:1050,a:900},{t:"estufa",w:2,u:1000,a:780,h:1030,d:620}]).slice(0,20).map(e=>{e=e||{};const t=KEL[e.t]?e.t:"lavaplatos",D0=KD[t],hb=KHB[t],db=KDB[t];return{t,w:Math.round(n(e.w,1,1,3)),u:n(e.u,0,0,10000),a:n(e.a,D0[0],100,3000),h:hb?n(e.h,D0[1],hb[0],hb[1]):0,d:db?n(e.d,D0[2],db[0],db[1]):0}});
+return{forma:fo,p:P,hb:n(k.hb,760,300,1200),db:n(k.db,560,250,800),zoc:n(k.zoc,100,0,300),mt:n(k.mt,40,0,100),ae:k.ae===0||k.ae===false?0:1,ha:n(k.ha,700,250,1400),da:n(k.da,350,150,600),ya:n(k.ya,1450,1000,2200),mw:n(k.mw,600,300,1200),cj:k.cj===0||k.cj===false?0:1,el}}
+function kWalls(k){return k.forma=="lineal"?[1]:k.forma=="L"?[1,2]:[1,2,3]}
+function kCut(fr,a,b){const o=[];fr.forEach(s=>{if(b<=s[0]||a>=s[1]){o.push(s);return}if(a>s[0])o.push([s[0],a]);if(b<s[1])o.push([b,s[1]])});return o}
+function kXf(k,w,u0,p){const LA=k.p[0];if(w==1)return Object.assign({},p,{x:u0+p.x});const q=Object.assign({},p,{z:u0+p.x,sx:p.sz,sz:p.sx,ex:p.ex?(w==2?[p.ex[2],p.ex[1],p.ex[0]]:[-p.ex[2],p.ex[1],p.ex[0]]):[0,0,0]});if(p.mv)q.mv=w==2?[p.mv[2],p.mv[1],p.mv[0]]:[-p.mv[2],p.mv[1],p.mv[0]];q.x=w==2?p.z:LA-p.z-p.sz;return q}
+function kLayout(k,t){t=t||18;const mods=[],warn=[],rell=[],camp=[],ws=kWalls(k),LA=k.p[0],RL=50,GP=50,HB=(k.zoc||0)+k.hb,TALL=e=>e.t=="nevera"||e.t=="estufa",dep=lv=>lv=="b"?k.db:k.da,cs={};
+const obs=(w,lv)=>k.el.filter(e=>e.w==w&&(TALL(e)||(lv=="a"?e.t=="ventana"||e.t=="cubierta":e.t=="lavaplatos"||e.t=="cubierta")));
+const cz=(w,lv)=>{const D=dep(lv),Bw=D+t+RL,lf=w==2,Bt=k.db+t+RL,o1=obs(1,lv),tl=o1.filter(e=>TALL(e)&&(lf?e.u<Bt:e.u+e.a>LA-Bt));
+if(tl.length)return{S:Math.max(D,...tl.map(e=>e.d+GP)),own:0,dead:lf?[0,Math.min(...tl.map(e=>e.u))]:[Math.max(...tl.map(e=>e.u+e.a)),LA],ap:tl[0]};
+const z0=lf?0:LA-Bw,z1=lf?Bw:LA,inz=o1.filter(e=>e.u<z1&&e.u+e.a>z0);
+if(inz.some(e=>e.t=="ventana"))return{S:D,own:0};
+if(inz.length){const e=inz[0];if(lv=="b")warn.push((e.t=="lavaplatos"?"El lavaplatos":"La estufa de empotrar")+" de la pared 1 queda en la esquina con la pared "+w+" y su puerta no abriría: córrela para que "+(lf?"empiece a "+f(Bw+250)+" cm o más del extremo izquierdo":"termine antes de "+f(LA-Bw-250)+" cm")+".");return{S:Bw,own:0,rel:1,dead:lf?[0,Math.min(...inz.map(e=>e.u))]:[Math.max(...inz.map(e=>e.u+e.a)),LA],ap:e}}
+const av1=lf?Math.min(LA,...o1.map(e=>e.u)):LA-Math.max(0,...o1.map(e=>e.u+e.a));
+const avw=Math.min(k.p[w-1],...obs(w,lv).map(e=>e.u));
+return av1>=Bw+250||avw<Bw+250?{S:Bw,own:1,Bw}:{S:0,own:w,Bw}};
+ws.forEach(w=>{if(w>1)["b","a"].forEach(lv=>{cs[w+lv]=cz(w,lv)})});
+const split=(w,lv,a0,b0,cL,cR)=>{let a=a0,b=b0;const door=(r,c)=>{if(r<250)warn.push("Esquina de la pared "+c+": la puerta del esquinero queda de "+f(Math.max(r,0))+" cm; alarga ese tramo o mueve lo que está al lado.");return Math.max(150,r<=600?r:450)};
+if(cL){const d=door(b-a-cL.Bw-(cR?cR.Bw+300:0),w==1?"1 con la 2":w),wd=Math.min(cL.Bw+d,b-a);mods.push({w,u0:a,wd,lv,tipo:"P",corner:"L",bw:cL.Bw});a+=wd}
+if(cR&&b-a>0){const d=door(b-a-cR.Bw,"1 con la 3"),wd=Math.min(cR.Bw+d,b-a);mods.push({w,u0:b-wd,wd,lv,tipo:"P",corner:"R",bw:cR.Bw});b-=wd}
+const len=b-a;if(len<150){if(len>=10)warn.push("Pared "+w+": queda un espacio de "+f(len)+" cm "+(lv=="b"?"en los bajos":"en los aéreos")+" sin módulo; cúbrelo con un relleno.");return}
+const nm=Math.ceil(len/k.mw-1e-9),wd=Math.floor(len/nm*10)/10;let u=a;for(let i=0;i<nm;i++){const ww=i<nm-1?wd:Math.round((b-u)*10)/10;mods.push({w,u0:u,wd:ww,lv,tipo:"P"});u+=ww}};
+ws.forEach(w=>{const L=k.p[w-1];k.el.filter(e=>e.w==w&&e.u+e.a>L+1).forEach(e=>warn.push(KEL[e.t]+" de la pared "+w+" se sale de la pared ("+f(e.u+e.a)+" de "+f(L)+" cm)."));
+["b","a"].forEach(lv=>{if(lv=="a"&&!k.ae)return;const D=dep(lv),c=w>1?cs[w+lv]:null,s0=c?c.S:0,c2=cs["2"+lv],c3=cs["3"+lv],cL=w==1?(c2&&c2.own==1?c2:null):(c&&c.own==w?c:null),cR=w==1&&c3&&c3.own==1?c3:null;
+if(c&&lv=="b")k.el.filter(e=>e.w==w&&e.t!="ventana"&&e.u<s0-1).forEach(e=>warn.push(KEL[e.t]+" de la pared "+w+" queda metido en la esquina: ponlo a "+f(s0)+" cm o más de la esquina."));
+let fr=[[s0,L]];
+if(c&&(c.own==1||c.rel))rell.push({w,lv,u:D+t,wd:RL});
+if(w==1)[c2,c3].forEach((cc,j)=>{if(cc&&cc.dead&&cc.dead[1]-cc.dead[0]>0){fr=kCut(fr,cc.dead[0],cc.dead[1]);if(lv=="b"&&cc.dead[1]-cc.dead[0]>=10)warn.push("Pared 1: entre "+({nevera:"la nevera",estufa:"la estufa",lavaplatos:"el lavaplatos",cubierta:"la estufa de empotrar"}[cc.ap.t])+" y la esquina con la pared "+(j+2)+" quedan "+f(cc.dead[1]-cc.dead[0])+" cm que no se pueden usar (los tapan los muebles de la pared "+(j+2)+"). Córrelo hasta la esquina o aléjalo.")}});
+if(w==1){if(c2&&c2.own==2){fr=kCut(fr,0,c2.Bw);rell.push({w:1,lv,u:D+t,wd:RL})}if(c3&&c3.own==3){fr=kCut(fr,LA-c3.Bw,LA);rell.push({w:1,lv,u:LA-D-t-RL,wd:RL})}}
+obs(w,lv).filter(e=>TALL(e)||lv=="a").forEach(e=>{fr=kCut(fr,e.u,e.u+e.a)});
+if(lv=="a"){const top=k.ya+k.ha;k.el.filter(e=>e.w==w&&e.u>=s0-1).forEach(e=>{if(e.t=="nevera"){const y0=e.h+50;if(top-y0>=200)mods.push({w,u0:e.u,wd:e.a,lv,tipo:"P",y0,h:top-y0,puente:1})}
+else if(e.t=="estufa"||e.t=="cubierta"){const yc=HB+(k.mt||0)+650,y0=Math.max(k.ya,yc+120);camp.push({w,u:e.u,a:e.a,y:yc});if(top-y0>=200)mods.push({w,u0:e.u,wd:e.a,lv,tipo:"P",y0,h:top-y0,campana:1})}})}
+fr.forEach(([a,b])=>{let pcs=[[a,b,0]];if(lv=="b")k.el.filter(e=>e.w==w&&(e.t=="lavaplatos"||e.t=="cubierta")).forEach(e=>{const kd=e.t=="lavaplatos"?1:2,o=[];pcs.forEach(q=>{if(q[2]||e.u+e.a<=q[0]||e.u>=q[1]){o.push(q);return}const s1=Math.max(q[0],e.u),s2=Math.min(q[1],e.u+e.a);if(s1>q[0])o.push([q[0],s1,0]);o.push([s1,s2,kd]);if(s2<q[1])o.push([s2,q[1],0])});pcs=o});
+pcs.forEach(([a0,b0,kd])=>{if(kd){if(b0-a0<150)return;mods.push({w,u0:a0,wd:b0-a0,lv,tipo:"P",sink:kd==1?1:0,cook:kd==2?1:0});return}
+split(w,lv,a0,b0,cL&&Math.abs(a0-s0)<1?cL:null,cR&&b0>LA-1?cR:null)})})})});
+mods.filter(m=>m.corner&&m.lv=="b").forEach(m=>{const o=m.w==1?(m.corner=="L"?2:3):1,lim=k.db+t+m.wd-m.bw;k.el.filter(e=>TALL(e)&&e.d+20>k.db+t&&(o>1?e.w==o&&e.u<lim:e.w==1&&(m.w==2?e.u<lim:e.u+e.a>LA-lim))).forEach(e=>warn.push(KEL[e.t]+" de la pared "+e.w+" está muy cerca de la esquina: es más honda que los muebles y no deja abrir del todo la puerta del esquinero. Ponla a "+f(lim)+" cm o más de la esquina."))});
+if(k.cj)k.el.filter(e=>e.t=="estufa"||e.t=="cubierta").forEach(e=>{const ok=m=>m.lv=="b"&&m.w==e.w&&!m.sink&&!m.cook&&!m.corner&&m.wd>=300,nx=mods.find(m=>ok(m)&&Math.abs(m.u0-(e.u+e.a))<1)||mods.find(m=>ok(m)&&Math.abs(m.u0+m.wd-e.u)<1);if(nx)nx.tipo="C3"});
+return{mods,warn,rell,camp,cs}}
+function buildCocina(cfg){const k=ccoc(cfg.coc),t=cfg.t,tc=+cfg.tc||0,M=new Map(),parts=[],steps=[],LA=k.p[0];
+const add=(nm,q,L,A,th,eL,eA)=>{const dc=th==t&&tc>0,Lc=dc?L-eA*tc:L,Ac=dc?A-eL*tc:A,kk=[nm,r1(Lc),r1(Ac),th].join("|"),o=M.get(kk);if(o)o.q+=q;else M.set(kk,{nm,q,L:r1(Lc),A:r1(Ac),Lf:r1(L),Af:r1(A),th,eL,eA})};
+const lay=kLayout(k,t),warn=lay.warn,mods=lay.mods,nb=mods.filter(m=>m.lv=="b").length,na=mods.filter(m=>m.lv=="a").length;
+steps.push("Arma los "+nb+" módulos bajos, cada uno con su zócalo: laterales, piso, techo, trasera y estantes.");steps.push("Pon los bajos en su sitio, nivélalos y únelos entre sí con tornillos."+(lay.rell.length?" En cada esquina, el módulo de la pared 1 lleva un panel ciego (no se abre) y la otra pared un relleno de 5 cm: así las puertas abren sin chocar con los tiradores. Pega un listón detrás del relleno y atorníllalo al primer módulo.":""));
+if(na){steps.push("Arma los "+na+" módulos aéreos.");steps.push("Cuelga los aéreos con su parte de abajo a "+f(k.ya)+" cm del piso, fijados a la pared con chazos y tornillos."+(mods.some(m=>m.puente)?" Sobre la nevera va un mueble más bajo (puente) dejando 5 cm para que respire.":"")+(lay.camp.length?" Sobre la estufa va el mueble de la campana: la campana queda a "+f(lay.camp[0].y)+" cm del piso, 65 cm por encima de los fogones (mínimo para gas).":""))}
+const sF=steps.push("Monta las puertas con sus bisagras, los cajones y los tiradores."),sM=steps.push("Instala el mesón (normalmente lo instala el proveedor del mesón)."),sB=1,sA=na?3:1;
+let hing=0,drw=0,pull=0,slideL=0,fb=0;
+mods.forEach(m=>{const isB=m.lv=="b",sub=buildCaja(Object.assign({},cfg,{kind:"caja",H:isB?k.hb:(m.h||k.ha),D:isB?k.db:k.da,cols:[{w:m.wd-2*t,t:m.tipo,n:m.tipo=="P"?(m.sink?0:1):undefined,d:"",l:[]}],base:isB&&k.zoc?{t:"zocalo",h:k.zoc}:{t:"piso",h:0},luz:{w:false,k:3000,i:70}}));
+if(m.corner){const dr=sub.parts.filter(p=>p.nm=="Puerta"),th=sub.parts.find(p=>p.nm=="Tirador"),nd=dr.length,p0=dr[0],HC=(cfg.hol||{c:3}).c,R0=Math.min(...dr.map(p=>p.x)),R1=Math.max(...dr.map(p=>p.x+p.sx)),xb=m.corner=="L"?m.bw:m.wd-m.bw,L_=m.corner=="L",c0=L_?R0:xb+HC/2,c1=L_?xb-HC/2:R1,d0=L_?xb+HC/2:R0,d1=L_?R1:xb-HC/2;
+sub.parts=sub.parts.filter(p=>p.nm!="Puerta"&&p.nm!="Tirador");sub.parts.push(Object.assign({},p0,{nm:"Panel ciego",x:c0,sx:c1-c0}),Object.assign({},p0,{x:d0,sx:d1-d0}));if(th)sub.parts.push(Object.assign({},th,{x:L_?d1-40:d0+28}));
+sub.rows=sub.rows.filter(r=>r.nm!="Puerta");add("Puerta",1,p0.sy,r1(d1-d0),t,2,2);add("Panel ciego",1,p0.sy,r1(c1-c0),t,2,2);hing+=nd?sub.hing/nd:0;pull+=sub.pull-nd+1}else{hing+=sub.hing;pull+=sub.pull}
+sub.rows.forEach(r=>add(r.nm,r.q,r.Lf,r.Af,r.th,r.eL,r.eA));sub.warn.forEach(x=>warn.push(x));drw+=sub.drw;if(sub.slideL)slideL=sub.slideL;fb=sub.fb;
+sub.parts.filter(p=>p.nm!="Suelo"&&p.nm!="Pared").forEach(p=>{const q=kXf(k,m.w,m.u0,p);q.ls=[p.sx,p.sy,p.sz];if(!isB)q.y+=m.y0||k.ya;q.wl=m.w-1;q.s=["Puerta","Frente","Cajón","Tirador","Panel ciego"].includes(p.nm)?sF:isB?sB:sA;if(m.sink&&p.nm=="Puerta")q.sink=1;parts.push(q)})});
+const HB=(k.zoc||0)+k.hb,Dm=k.db+40;let meson=0;
+lay.rell.forEach(r=>{const isB=r.lv=="b",D=isB?k.db:k.da,b={nm:"Relleno",s:sF,x:r.u,y:isB?(k.zoc||0):k.ya,z:D,sx:r.wd,sy:isB?k.hb:k.ha,sz:t,c:0xc9a46b,ex:[0,0,1.7]},q=kXf(k,r.w,0,b);q.ls=[b.sx,b.sy,b.sz];q.wl=r.w-1;parts.push(q);add("Relleno de esquina",1,b.sy,b.sx,t,2,2)});
+kWalls(k).forEach(w=>{const bm=mods.filter(m=>m.w==w&&m.lv=="b").sort((a,b)=>a.u0-b.u0),segs=[];bm.forEach(m=>{const L=segs[segs.length-1];if(L&&Math.abs(L[1]-m.u0)<1)L[1]=m.u0+m.wd;else segs.push([m.u0,m.u0+m.wd])});
+segs.forEach(([a,b])=>{const c2=lay.cs["2b"],c3=lay.cs["3b"];if(w>1){const c=lay.cs[w+"b"];a=c&&c.own==w&&a<1?0:c&&(c.own==1||c.rel)&&Math.abs(a-c.S)<1?Dm:Math.max(a,Dm)}else{if(c2&&c2.own==2&&Math.abs(a-c2.Bw)<1)a=Dm;if(c3&&c3.own==3&&Math.abs(b-(LA-c3.Bw))<1)b=LA-Dm}if(b-a<10)return;meson+=b-a;const box={nm:"Mesón",s:sM,x:a,y:HB,z:0,sx:b-a,sy:k.mt||1,sz:Dm,c:0x9aa0a6,ex:[0,1,0],nomap:1,fx:1};const q=w==1?Object.assign({},box,{x:a}):kXf(k,w,a,Object.assign({},box,{x:0}));q.wl=w-1;if(k.mt)parts.push(q)})});
+const LB=k.forma!="lineal"?k.p[1]:0,LC=k.forma=="U"?k.p[2]:0,topY=Math.max(HB+k.mt,k.ae&&na?k.ya+k.ha:0),Dz=Math.max(Dm,LB,LC);
+parts.push({nm:"Suelo",s:1,x:-300,y:-12,z:-300,sx:LA+600,sy:12,sz:Dz+900,c:0x5a6168,ex:[0,0,0],nomap:1,fx:1,op:.55});
+parts.push({nm:"Pared",s:1,x:-22,y:0,z:-22,sx:LA+44,sy:topY+300,sz:22,c:0x8d969d,ex:[0,0,0],nomap:1,fx:1,op:.35});
+if(LB)parts.push({nm:"Pared",s:1,x:-22,y:0,z:0,sx:22,sy:topY+300,sz:LB,c:0x8d969d,ex:[0,0,0],nomap:1,fx:1,op:.35});
+if(LC)parts.push({nm:"Pared",s:1,x:LA,y:0,z:0,sx:22,sy:topY+300,sz:LC,c:0x8d969d,ex:[0,0,0],nomap:1,fx:1,op:.35});
+k.el.filter(e=>e.w<=kWalls(k).length&&(e.t=="nevera"||e.t=="estufa"||e.t=="cubierta")).forEach(e=>{const nv=e.t=="nevera",cb=e.t=="cubierta",b=nv?{nm:"Nevera",s:1,x:20,y:0,z:20,sx:e.a-40,sy:e.h,sz:e.d,c:0xdfe3e6}:cb?{nm:"Cubierta",s:sM,x:Math.max(10,(e.a-600)/2),y:HB+(k.mt||0),sy:12,z:Math.max(20,(Dm-e.d)/2),sx:Math.min(600,e.a-20),sz:e.d,c:0x1f2224}:{nm:"Estufa",s:1,x:10,y:0,z:20,sx:e.a-20,sy:e.h,sz:e.d,c:0x2b2e31};if(cb&&!k.mt)return;const ct=HB+(k.mt||0),pp=[b];if(!nv&&!cb){b.sy=Math.min(e.h,ct);if(e.h>ct+10)pp.push({nm:"Estufa",s:1,x:10,y:ct,z:20,sx:e.a-20,sy:e.h-ct,sz:40,c:0x2b2e31});pp.push({nm:"Estufa",s:1,x:70,y:Math.min(e.h,ct)*.18,z:20+e.d,sx:e.a-140,sy:Math.min(e.h,ct)*.5,sz:6,c:0x101214})}
+if(!nv){const ty=cb?ct+12:Math.min(e.h,ct),x0=b.x,w0=b.sx,z0=b.z+(cb?0:40),d0=b.sz-(cb?0:40),nc=w0>=700?3:2;for(let i=0;i<nc;i++)for(let j=0;j<2;j++)pp.push({nm:"Fogón",s:b.s,x:x0+w0*(i+.5)/nc-55,y:ty,z:z0+d0*(j+.5)/2-55,sx:110,sy:8,sz:110,c:0x0b0c0d,g:"cyl"})}
+pp.forEach(z=>{const q=kXf(k,e.w,e.u,Object.assign(z,{ex:[0,0,0],nomap:1,fx:1}));q.wl=e.w-1;parts.push(q)})});
+lay.camp.forEach(c=>{const q=kXf(k,c.w,c.u,{nm:"Campana",s:sA,x:10,y:c.y,z:0,sx:c.a-20,sy:120,sz:k.da,c:0xb0b6bb,ex:[0,0,0],nomap:1,fx:1});q.wl=c.w-1;parts.push(q)});
+const rows=[...M.values()],fd=(nms,a,b)=>{const hi=Math.max(a,b),lo=Math.min(a,b);return rows.findIndex(r=>nms.includes(r.nm)&&Math.abs(Math.max(r.Lf,r.Af)-hi)<.2&&Math.abs(Math.min(r.Lf,r.Af)-lo)<.2)+1};
+parts.forEach(p=>{if(p.nm=="Cajón"){const l=p.ls,q=[fd(["Lateral de cajón"],l[2],l[1]),fd(["Trasera de cajón"],l[0]-2*t,l[1]),fd(["Fondo de cajón (0,6 cm)"],l[2],l[0])].filter(Boolean);p.lb=q.length?"Cajón "+q.map(z=>"#"+z).join(" "):"Cajón"}else if(!p.fx){const q=[p.sx,p.sy,p.sz].sort((a,b)=>b-a);p.n=fd(MP[p.nm]||[],q[0],q[1])}});
+return{rows,parts,steps,W:LA,H:topY,top:topY,lift:0,D:Dz,t,tc,fb,hing,drw,pull,slideL,nLegs:0,legT:"piso",legH:0,nHang:0,ledLen:0,nSpot:0,spaces:[],warn,kmods:mods,meson,kk:k,krell:lay.rell,kcamp:lay.camp}}
+function renderPlan(){const e=$("kplan");if(!e||!B||!B.kk)return;const k=B.kk,LA=k.p[0],LB=k.forma!="lineal"?k.p[1]:0,LC=k.forma=="U"?k.p[2]:0,Wd=LA+300,Hd=Math.max(k.db+300,LB+150,LC+150),sc=Math.min(340/Wd,300/Hd),X=v=>(v+150)*sc,Z=v=>(v+120)*sc;
+const rect=(w,u,wd,dp,st)=>{const q=kXf(k,w,u,{x:0,y:0,z:0,sx:wd,sy:1,sz:dp});return`<rect x="${X(q.x)}" y="${Z(q.z)}" width="${q.sx*sc}" height="${q.sz*sc}" ${st}/>`},txt=(w,u,wd,dp,tx,c)=>{const q=kXf(k,w,u,{x:0,y:0,z:0,sx:wd,sy:1,sz:dp});return`<text x="${X(q.x+q.sx/2)}" y="${Z(q.z+q.sz/2)+4}" font-size="11" text-anchor="middle" fill="${c||"#eceff1"}" font-weight="700">${tx}</text>`};
+let h=`<svg viewBox="0 0 ${Wd*sc} ${Hd*sc}" width="100%" role="img">`;
+h+=`<line x1="${X(0)}" y1="${Z(0)}" x2="${X(LA)}" y2="${Z(0)}" stroke="#ff7a1a" stroke-width="4"/>`;if(LB)h+=`<line x1="${X(0)}" y1="${Z(0)}" x2="${X(0)}" y2="${Z(LB)}" stroke="#ff7a1a" stroke-width="4"/>`;if(LC)h+=`<line x1="${X(LA)}" y1="${Z(0)}" x2="${X(LA)}" y2="${Z(LC)}" stroke="#ff7a1a" stroke-width="4"/>`;
+B.kmods.filter(m=>m.lv=="b").forEach(m=>{h+=rect(m.w,m.u0,m.wd,k.db,`fill="${m.sink?"#2f6f9f":"#7d6a52"}" stroke="#16181a" stroke-width="1.5"`);if(m.corner)h+=rect(m.w,m.corner=="L"?m.u0:m.u0+m.wd-m.bw,m.bw,k.db,`fill="#4a3f33" stroke="#16181a" stroke-width="1.5"`);if(m.cook)h+=rect(m.w,m.u0+10,m.wd-20,k.db-60,`fill="#1f2224" stroke="#9aa4ac"`);h+=txt(m.w,m.corner=="L"?m.u0+m.bw:m.u0,m.corner?m.wd-m.bw:m.wd,k.db,(m.sink?"L ":m.cook?"E ":m.corner?"Esq ":m.tipo[0]=="C"?"C ":"")+Math.round(m.wd/10))});
+(B.krell||[]).filter(r=>r.lv=="b").forEach(r=>{h+=rect(r.w,r.u,r.wd,k.db,`fill="#ff7a1a" opacity=".8"`)});
+B.kmods.filter(m=>m.lv=="a").forEach(m=>{h+=rect(m.w,m.u0,m.wd,k.da,`fill="none" stroke="#eceff1" stroke-width="1.2" stroke-dasharray="4 3"`)});
+k.el.filter(e=>e.t!="lavaplatos"&&e.t!="cubierta"&&e.w<=kWalls(k).length).forEach(e=>{const nv=e.t=="nevera",dp=e.t=="ventana"?60:e.d||k.db;h+=rect(e.w,e.u,e.a,dp,e.t=="ventana"?`fill="#6fb3e0" opacity=".55"`:`fill="${nv?"#dfe3e6":"#2b2e31"}" stroke="#9aa4ac"`);h+=txt(e.w,e.u,e.a,dp,e.t=="ventana"?"":nv?"Nevera":"Estufa",nv?"#16181a":"#eceff1")});
+[[1,LA],[2,LB],[3,LC]].forEach(([w,L])=>{if(!L)return;const q=kXf(k,w,L/2,{x:0,y:0,z:0,sx:1,sy:1,sz:1});const tx=X(w==1?q.x:w==2?-75:LA+75),ty=Z(w==1?-55:q.z);h+=`<text x="${tx}" y="${ty}" font-size="11" text-anchor="middle" fill="#ff7a1a"${w>1?` transform="rotate(${w==2?-90:90} ${tx} ${ty})"`:""}>Pared ${w}: ${f(L)} cm</text>`});
+e.innerHTML=h+"</svg>"}
+function kMatch(e){const L=KPRE[e.t]||[];const j=L.findIndex(q=>q[1]==e.a&&(!q[2]||q[2]==e.h)&&(!q[3]||q[3]==e.d));return j<0?"x":String(j)}
+function renderEl(){const k=ccoc(cfg.coc),nw=kWalls(k).length,inp=(f_,i,v)=>`<input type="number" inputmode="decimal" step="any" data-ke="${f_}" data-i="${i}" value="${r1(v/10)}">`;$("kel").innerHTML=k.el.map((e,i)=>`<div class="ke"><label class="kt">Qué es<select data-ke="t" data-i="${i}">${Object.keys(KEL).map(x=>`<option value="${x}"${x==e.t?" selected":""}>${{estufa:"Estufa piso",cubierta:"Cubierta"}[x]||KEL[x]}</option>`).join("")}</select></label><label class="km">Tamaño<select data-ke="m" data-i="${i}">${(KPRE[e.t]||[]).map((q,j)=>`<option value="${j}"${kMatch(e)==String(j)?" selected":""}>${q[0]}</option>`).join("")}<option value="x"${kMatch(e)=="x"?" selected":""}>Medida propia</option></select></label><label>Pared<select data-ke="w" data-i="${i}">${[1,2,3].slice(0,nw).map(x=>`<option${x==e.w?" selected":""}>${x}</option>`).join("")}</select></label><label>Desde${inp("u",i,e.u)}</label><label>${e.t=="nevera"||e.t=="estufa"?"Espacio":"Ancho"}${inp("a",i,e.a)}</label>${KHB[e.t]?`<label>Alto${inp("h",i,e.h)}</label>`:"<span></span>"}${KDB[e.t]?`<label>Fondo${inp("d",i,e.d)}</label>`:"<span></span>"}<button type="button" class="rm" data-kd="${i}" aria-label="Quitar">×</button></div>`).join("")}
+function csofa(o){o=o||{};const n=(v,d,a,b)=>isFinite(+v)&&+v>=a&&+v<=b?+v:d,tp=o.tipo=="nido"?"nido":"cajones";
+return{tipo:tp,hs:n(o.hs,450,300,650),hb:n(o.hb,380,250,550),ha:n(o.ha,tp=="nido"?650:600,300,1000),ce:n(o.ce,tp=="nido"?150:120,50,350),k:Math.round(n(o.k,3,1,5)),mc:[900,1000,1200].includes(+o.mc)?+o.mc:1000,ml:n(o.ml,1900,1500,2200),nw:n(o.nw,900,600,1200),nl:n(o.nl,1800,1400,2100),nt:n(o.nt,120,50,450),bt:["recto","caja","repisa"].includes(o.bt)?o.bt:"recto",aw:n(o.aw,150,80,400)}}
+function buildSofa(cfg){
+const t=cfg.t,s=csofa(cfg.sofa),tc=+cfg.tc||0,warn=[],M=new Map(),parts=[],steps=[],W0=0xd2b48c,FAB=0x3a4049,BED=0xd9d4ca,Hr=Math.max(400,Math.min(1600,cfg.H||800));
+const add=(nm,q,L,A,th,eL,eA)=>{const dc=th==t&&tc>0,Lc=dc?L-eA*tc:L,Ac=dc?A-eL*tc:A,k=[nm,r1(Lc),r1(Ac),th].join("|"),o=M.get(k);if(o)o.q+=q;else M.set(k,{nm,q,L:r1(Lc),A:r1(Ac),Lf:r1(L),Af:r1(A),th,eL,eA})};
+const box=(nm,s_,x,y,z,sx,sy,sz,ex)=>parts.push({nm,s:s_,x,y,z,sx,sy,sz,c:W0,ex}),S_=x=>{steps.push(x);return steps.length},fx=(nm,s_,x,y,z,sx,sy,sz,c,g,ex)=>parts.push({nm,s:s_,x,y,z,sx,sy,sz,c,ex:ex||[0,0,0],nomap:1,fx:1,g});
+let W,D,drw=0,pull=0,slideL=0,nWheel=0;const cush=[];
+const AW=s.bt=="recto"?t:Math.max(2*t+60,s.aw),armT=s.bt=="recto"?"":"Arma cada brazo como una caja: une sus dos tableros con la trasera"+(s.bt=="repisa"?" y las dos repisas":" y el frente")+" y atornilla la tapa encima. ";
+const arms=(st,D)=>{if(s.bt=="recto"){box("Brazo",st,0,0,0,t,s.ha,D,[-1,0,0]);box("Brazo",st,W-t,0,0,t,s.ha,D,[1,0,0]);add("Brazo",2,D,s.ha,t,1,1)}
+else{const hp=s.ha-t;[0,W-AW].forEach((x0,j)=>{const sg=j?1:-1;box("Brazo",st,x0,0,0,t,hp,D,[sg*.6,0,0]);box("Brazo",st,x0+AW-t,0,0,t,hp,D,[sg*.4,0,0]);box("Tapa del brazo",st,x0,hp,0,AW,t,D,[sg*.5,.7,0]);box("Trasera del brazo",st,x0+t,0,0,AW-2*t,hp,t,[sg*.5,0,-.5]);
+if(s.bt=="caja")box("Frente del brazo",st,x0+t,0,D-t,AW-2*t,hp,t,[sg*.5,0,.7]);else[1,2].forEach(k=>box("Repisa del brazo",st,x0+t,hp*k/3,t,AW-2*t,t,D-t,[sg*.5,0,.4]))});
+add("Brazo",4,D,hp,t,0,1);add("Tapa del brazo",2,D,AW,t,2,1);add("Trasera del brazo",2,AW-2*t,hp,t,0,0);if(s.bt=="caja")add("Frente del brazo",2,hp,AW-2*t,t,0,0);else add("Repisa del brazo",4,AW-2*t,D-t,t,1,0)}
+box("Respaldo",st,AW,0,0,W-2*AW,Hr,t,[0,0,-1]);add("Respaldo",1,W-2*AW,Hr,t,1,0)};
+if(s.tipo=="cajones"){W=Math.max(800,Math.min(3000,+cfg.W||1900));D=Math.max(600,Math.min(1200,+cfg.D||800));const Win=W-2*AW,zoc=60,hb=s.hs-s.ce,Hc=hb-zoc,n=Math.max(1,Math.min(5,s.k)),wi=(Win-(n+1)*t)/n,BC=150;
+if(Hc<180)warn.push("El módulo de cajones queda muy bajo ("+f(Hc)+" cm): sube el asiento o usa un cojín más delgado.");
+const sub=buildCaja(Object.assign({},cfg,{kind:"caja",H:Math.max(180,Hc),D:D-t,cols:Array.from({length:n},()=>({w:wi,t:"C1",d:"",l:[]})),base:{t:"zocalo",h:zoc},luz:{w:false,k:3000,i:70},fondo:"igual",dl:510}));
+sub.steps.forEach(x=>steps.push("Módulo de cajones: "+x.charAt(0).toLowerCase()+x.slice(1)));sub.parts.forEach(p=>{if(p.nm=="Suelo"||p.nm=="Pared")return;p.x+=AW;p.z+=t;parts.push(p)});sub.rows.forEach(r=>add(r.nm,r.q,r.Lf,r.Af,r.th,r.eL,r.eA));sub.warn.forEach(w=>warn.push(w));drw=sub.drw;pull=sub.pull;slideL=sub.slideL;
+const s1=S_(armT+"Pon los dos brazos a los lados del módulo de cajones y el respaldo atrás. Atornilla los brazos al respaldo y al módulo con tornillos 4×50, a escuadra.");arms(s1,D);
+const s2=S_("Pon los cojines de espuma: los del asiento sobre el módulo y los del respaldo apoyados contra el respaldo."),np=Math.max(1,Math.round(Win/650)),cw=(Win-10)/np,sd=D-t-BC-15;
+for(let i=0;i<np;i++){fx("Cojín",s2,AW+5+i*cw+3,hb,t+BC+5,cw-6,s.ce,sd,FAB);fx("Cojín",s2,AW+5+i*cw+3,hb,t+3,cw-6,Math.min(480,Hr-hb+60),BC,FAB)}
+cush.push({n:"Cojines de espuma para el asiento",q:np,t:np+" de "+f(Math.round(cw-6))+" × "+f(Math.round(sd))+" × "+f(s.ce)+" cm"},{n:"Cojines para el respaldo",q:np,t:np+" de "+f(Math.round(cw-6))+" × "+f(Math.min(480,Hr-hb+60))+" × "+f(BC)+" cm"});
+if(Hr<s.hs+250)warn.push("El respaldo queda bajo para la espalda: súbelo a "+f(s.hs+300)+" cm o más.");if(s.ha<s.hs+80)warn.push("Los brazos quedan casi a ras del asiento: súbelos a "+f(s.hs+150)+" cm o más.")}
+else{W=s.ml+2*AW+20;D=s.mc+t+20;const Win=W-2*AW,hb=s.hb,RH=100,RW=50,GP=15,yr=hb-t-RH;
+const s1=S_(armT+"Atornilla el respaldo entre los dos brazos con tornillos 4×50, a escuadra.");arms(s1,D);
+const s2=S_("Pon los dos travesaños: uno atrás contra el respaldo y otro adelante, con su borde de arriba a "+f(hb-t)+" cm del piso.");box("Travesaño",s2,AW,yr,t,Win,RH,t,[0,0,-.5]);box("Travesaño",s2,AW,yr,D-t,Win,RH,t,[0,0,1]);add("Travesaño",2,Win,RH,t,1,0);
+const s3=S_("Coloca la tapa del diván sobre los travesaños y atorníllala a ellos y a los brazos."+(Win>1200?" Para que no se pandee, atornilla por debajo un listón de madera de lado a lado, en la mitad del fondo (no estorba al nido).":""));box("Tapa del diván",s3,AW,hb-t,t,Win,t,D-t,[0,1,0]);add("Tapa del diván",1,Win,D-t,t,1,0);
+const x0=AW+GP,Wn=Win-2*GP,z0=2*t+2*GP,Dn=D-z0,ft=yr-8,hn=Math.max(80,Math.min(150,ft-RW-t-10)),yp=RW;nWheel=Wn>1500?6:4;
+const s4=S_("Arma el nido: une los laterales, la trasera y el frente sobre el piso del nido y atornilla "+nWheel+" rodachinas debajo, cerca de las esquinas.");
+box("Piso del nido",s4,x0,yp,z0,Wn,t,Dn-t,[0,-.3,.5]);box("Lateral del nido",s4,x0,yp+t,z0,t,hn,Dn-t,[-1,0,.5]);box("Lateral del nido",s4,x0+Wn-t,yp+t,z0,t,hn,Dn-t,[1,0,.5]);box("Trasera del nido",s4,x0+t,yp+t,z0,Wn-2*t,hn,t,[0,0,-.5]);box("Frente del nido",s4,x0,15,D-t,Wn,ft-15,t,[0,0,1.7]);
+add("Piso del nido",1,Wn,Dn-t,t,0,0);add("Lateral del nido",2,Dn-t,hn,t,1,0);add("Trasera del nido",1,Wn-2*t,hn,t,1,0);add("Frente del nido",1,Wn,ft-15,t,2,2);
+fx("Tirador",s4,x0+Wn/2-80,(15+ft)/2-6,D,160,12,22,0xc2c7cc,null,[0,0,1.9]);parts[parts.length-1].nido=1;pull=1;
+for(let i=0;i<nWheel;i++){const cx=nWheel==6?[0,.5,1][i%3]:[0,1][i%2],rz=i<nWheel/2?0:1;fx("Rodachina",s4,x0+40+cx*(Wn-120),0,z0+40+rz*(Dn-t-120),40,yp,40,0x1d1f21,"cyl")}
+const iw=Wn-2*t,id=Dn-2*t;if(s.nl>iw)warn.push("El colchón del nido ("+f(s.nl)+" cm de largo) no cabe: el nido mide "+f(iw)+" cm por dentro.");if(s.nw>id)warn.push("El colchón del nido ("+f(s.nw)+" cm de ancho) no cabe: el nido mide "+f(id)+" cm de fondo por dentro. Usa uno más angosto.");
+if(yp+t+s.nt>yr-10)warn.push("El colchón del nido es muy grueso: con la tapa a "+f(hb)+" cm, puede tener máximo "+f(yr-10-yp-t)+" cm.");
+const s5=S_("Mete el nido debajo del diván y pon los colchones y los cojines del respaldo.");
+fx("Colchón",s5,AW+10,hb,t+10,s.ml,s.ce,s.mc,BED);fx("Colchón",s5,x0+t+Math.max(0,(iw-s.nl)/2),yp+t,z0+t+Math.max(0,(id-s.nw)/2),Math.min(s.nl,iw),s.nt,Math.min(s.nw,id),BED);parts[parts.length-1].nido=1;
+parts.forEach(p=>{if(p.nido||["Piso del nido","Lateral del nido","Trasera del nido","Frente del nido","Rodachina"].includes(p.nm))p.mv=[0,0,Math.round((Dn-t)*.92)]});
+const nc=3,cw=(Win-20)/nc;for(let i=0;i<nc;i++)fx("Cojín",s5,AW+10+i*cw+4,hb+s.ce,t+6,cw-8,Math.min(450,Math.max(200,Hr-hb-s.ce+40)),170,FAB);
+cush.push({n:"Colchón de arriba",q:1,t:f(s.mc)+" × "+f(s.ml)+" cm, de "+f(s.ce)+" cm de grosor"},{n:"Colchón del nido",q:1,t:f(s.nw)+" × "+f(s.nl)+" cm, de "+f(s.nt)+" cm de grosor o menos"},{n:"Cojines para el respaldo",q:nc,t:nc+" de unos "+f(Math.round(cw-8))+" × 45 cm"});
+if(s.ha<hb+s.ce+50)warn.push("Los brazos quedan casi a ras del colchón: súbelos a "+f(hb+s.ce+120)+" cm o más.")}
+parts.unshift({nm:"Suelo",s:1,x:-300,y:-12,z:-300,sx:W+600,sy:12,sz:D+900,c:0x5a6168,ex:[0,0,0],nomap:1,fx:1,op:.55});
+if(W-2*AW>sheetL(cfg))warn.push("El respaldo mide "+f(W-2*AW)+" cm y no cabe en el tablero: necesitarás un tablero más largo o unirlo.");
+const rows=[...M.values()],fd=(nms,a,b)=>{const hi=Math.max(a,b),lo=Math.min(a,b);return rows.findIndex(r=>nms.includes(r.nm)&&Math.abs(Math.max(r.Lf,r.Af)-hi)<.2&&Math.abs(Math.min(r.Lf,r.Af)-lo)<.2)+1};
+parts.forEach(p=>{if(p.fx)return;if(p.nm=="Cajón"){const q=[fd(["Lateral de cajón"],p.sz,p.sy),fd(["Trasera de cajón"],p.sx-2*t,p.sy),fd(["Fondo de cajón (0,6 cm)"],p.sz,p.sx)].filter(Boolean);p.lb=q.length?"Cajón "+q.map(z=>"#"+z).join(" "):"Cajón"}else{const q=[p.sx,p.sy,p.sz].sort((a,b)=>b-a);p.n=fd(MP[p.nm]||[p.nm],q[0],q[1])}});
+const top=Math.max(Hr,s.ha);return{rows,parts,steps,W,H:top,top,lift:0,D,t,tc,fb:0,hing:0,drw,pull,slideL,nLegs:0,legT:"piso",legH:0,nHang:0,ledLen:0,nSpot:0,spaces:[],warn,nWheel,cush,sf:s}}
+function cmesa(m){m=m||{};const n=(v,d,a,b)=>isFinite(+v)&&+v>=a&&+v<=b?+v:d,ap=["paneles","cuadrada","redonda","conica"].includes(m.apoyo)?m.apoyo:"paneles";
+return{apoyo:ap,fal:["trasero","perimetral","no"].includes(m.fal)?m.fal:(ap=="paneles"?"trasero":"perimetral"),fh:n(m.fh,ap=="paneles"?300:80,20,900),rep:m.rep?1:0,caj:["no","der","izq"].includes(m.caj)?m.caj:"no",cw:n(m.cw,400,250,1000),k:Math.round(n(m.k,3,2,4))}}
+function buildMesa(cfg){
+const t=cfg.t,m=cmesa(cfg.mesa),W=Math.max(300,+cfg.W||1200),H=cfg.H,D=cfg.D,tc=+cfg.tc||0,warn=[],M=new Map(),parts=[],steps=[],W0=0xd2b48c,pan=m.apoyo=="paneles",hS=H-t,IN=30,DS=50;
+const add=(nm,q,L,A,th,eL,eA)=>{const dc=th==t&&tc>0,Lc=dc?L-eA*tc:L,Ac=dc?A-eL*tc:A,k=[nm,r1(Lc),r1(Ac),th].join("|"),o=M.get(k);if(o)o.q+=q;else M.set(k,{nm,q,L:r1(Lc),A:r1(Ac),Lf:r1(L),Af:r1(A),th,eL,eA})};
+const box=(nm,s,x,y,z,sx,sy,sz,c,ex)=>parts.push({nm,s,x,y,z,sx,sy,sz,c,ex}),S_=x=>{steps.push(x);return steps.length};
+let sub=null,cw=0;
+if(m.caj!="no"){cw=Math.min(m.cw,W-300);if(cw<m.cw)warn.push("La cajonera se achicó a "+f(cw)+" cm para que quede espacio para las piernas.");
+sub=buildCaja(Object.assign({},cfg,{kind:"caja",H:hS,cols:[{w:cw-2*t,t:"C"+m.k,d:"",l:[]}],base:{t:"piso",h:0},luz:{w:false,k:3000,i:70}}));
+const cx0=m.caj=="der"?W-cw:0;sub.steps.forEach(x=>steps.push("Cajonera: "+x.charAt(0).toLowerCase()+x.slice(1)));sub.parts.forEach(p=>{p.x+=cx0;parts.push(p)});sub.rows.forEach(r=>add(r.nm,r.q,r.Lf,r.Af,r.th,r.eL,r.eA));sub.warn.forEach(w=>warn.push(w))}
+let nLegs=0,xL,xR;const gp=m.apoyo=="redonda"?"cyl":m.apoyo=="conica"?"cone":"box";
+const s1=S_(pan?"Une "+(m.caj!="no"?"el lateral y la cajonera":"los dos laterales")+(m.fal!="no"?" con el faldón":"")+" usando tornillos 4×50. Revisa que quede a escuadra.":(m.fal!="no"?"Une el faldón a las patas con tornillos o escuadras metálicas.":"Atornilla las patas a la tapa con sus placas de montaje."));
+if(pan){if(m.caj!="izq"){box("Lateral",s1,0,0,0,t,hS,D,W0,[-1,0,0]);add("Lateral",1,hS,D,t,1,0);xL=t}else xL=cw;
+if(m.caj!="der"){box("Lateral",s1,W-t,0,0,t,hS,D,W0,[1,0,0]);add("Lateral",1,hS,D,t,1,0);xR=W-t}else xR=W-cw}
+else{const xs=[];if(m.caj!="izq")xs.push(IN);if(m.caj!="der")xs.push(W-IN-DS);xs.forEach(x=>[IN,D-IN-DS].forEach(z=>{parts.push({nm:"Pata",s:s1,x,y:0,z,sx:DS,sy:hS,sz:DS,c:0x2a2d30,ex:[0,-1,0],g:gp,nomap:1,fx:1});nLegs++}));
+xL=m.caj=="izq"?cw:IN+DS;xR=m.caj=="der"?W-cw:W-IN-DS}
+const fh=Math.min(m.fh,hS-150),zb=pan?0:IN,zf=pan?D-20-t:D-IN-t;
+if(m.fal=="trasero"){box("Faldón",s1,xL,hS-fh,zb,xR-xL,fh,t,W0,[0,0,-1]);add("Faldón trasero",1,xR-xL,fh,t,1,0)}
+else if(m.fal=="perimetral"){box("Faldón",s1,xL,hS-fh,zb,xR-xL,fh,t,W0,[0,0,-1]);box("Faldón",s1,xL,hS-fh,zf,xR-xL,fh,t,W0,[0,0,1]);add("Faldón largo",2,xR-xL,fh,t,1,0);
+if(!pan){const zl=D-2*IN-2*DS;let k=0;if(m.caj!="izq"){box("Faldón",s1,IN,hS-fh,IN+DS,t,fh,zl,W0,[-1,0,0]);k++}if(m.caj!="der"){box("Faldón",s1,W-IN-t,hS-fh,IN+DS,t,fh,zl,W0,[1,0,0]);k++}if(k)add("Faldón corto",k,zl,fh,t,1,0)}}
+if(m.rep){const s2=S_("Pon la repisa de abajo a 10 cm del piso"+(pan?", atornillada a los laterales.":", fijada a las patas con escuadras."));const z0=pan?20:IN,dz=pan?D-40:D-2*IN;box("Repisa baja",s2,xL,100,z0,xR-xL,t,dz,W0,[0,-.6,0]);add("Repisa baja",1,xR-xL,dz,t,1,0)}
+const s3=S_("Coloca la tapa encima y atorníllala desde abajo con tornillos cortos que no la atraviesen.");box("Tapa",s3,0,hS,0,W,t,D,W0,[0,1,0]);add("Tapa",1,W,D,t,2,2);
+if(W>sheetL(cfg))warn.push("La tapa mide "+f(W)+" cm y no cabe en el tablero: necesitarás unirla en dos partes o un tablero más largo.");
+const rows=[...M.values()],fd=(nms,a,b)=>{const hi=Math.max(a,b),lo=Math.min(a,b);return rows.findIndex(r=>nms.includes(r.nm)&&Math.abs(Math.max(r.Lf,r.Af)-hi)<.2&&Math.abs(Math.min(r.Lf,r.Af)-lo)<.2)+1};
+parts.forEach(p=>{if(p.nm=="Cajón"){const q=[fd(["Lateral de cajón"],p.sz,p.sy),fd(["Trasera de cajón"],p.sx-2*t,p.sy),fd(["Fondo de cajón (0,6 cm)"],p.sz,p.sx)].filter(Boolean);p.lb=q.length?"Cajón "+q.map(z=>"#"+z).join(" "):"Cajón"}else{const q=[p.sx,p.sy,p.sz].sort((a,b)=>b-a);p.n=fd(MP[p.nm]||[],q[0],q[1])}});
+return{rows,parts,steps,W,H,top:H,lift:0,D,t,tc,fb:sub?sub.fb:0,hing:0,drw:sub?sub.drw:0,pull:sub?sub.pull:0,slideL:sub?sub.slideL:0,nLegs,legT:pan?"piso":m.apoyo,legH:pan?0:hS,nHang:0,ledLen:0,nSpot:0,spaces:[],warn}}
+function sheetL(c){return Math.max(...String(c.sheet||"2440x1830").split("x").map(Number))-2*(+c.ref||0)}
+const ct=(a,b)=>a==2&&b==2?"4 lados":a||b?(a?a+" largo":"")+(a&&b?" + ":"")+(b?b+" ancho":""):"—";
+const GF=new Set(["Trasera","Fondo MDF (0,3 cm)","Lateral de cajón","Trasera de cajón","Fondo de cajón (0,6 cm)","Zócalo travesaño"]),vtx=r=>!!(cfg&&cfg.vt=="veta")&&!GF.has(r.nm);
+function nrm(r){const sw=!vtx(r)&&r.L<r.A;return{lg:sw?r.A:r.L,an:sw?r.L:r.A,eg:sw?r.eA:r.eL,ea:sw?r.eL:r.eA}}
+function tcT(r){const n=nrm(r),a=[];if(n.eg==2&&n.ea==2)return"Los 4 lados";if(n.eg)a.push(n.eg+(n.eg>1?" lados largos":" lado largo")+" ("+f(n.lg)+" cm)");if(n.ea)a.push(n.ea+(n.ea>1?" lados cortos":" lado corto")+" ("+f(n.an)+" cm)");return a.length?a.join(" + "):"Sin tapacanto"}
+function calc(){
+B=build(cfg);const SZ=cfg.sheet.split("x"),SW=+SZ[0],SH=+SZ[1],kerf=cfg.kerf,VT=cfg.vt=="veta",RF=+cfg.ref||0,UW=SW-2*RF,UH=SH-2*RF;
+const items=[],bad=[],sheets=[];
+B.rows.forEach((r,i)=>{if(r.th==B.t)for(let j=0;j<r.q;j++)items.push(vtx(r)?{c:i+1,w:r.L,h:r.A}:{c:i+1,w:Math.max(r.L,r.A),h:Math.min(r.L,r.A)})});
+items.sort((a,b)=>b.h-a.h||b.w-a.w);
+const place=(s,sh,it)=>{it.x=sh.x+RF;it.y=sh.y+RF;sh.x+=it.w+kerf;s.it.push(it)};
+items.forEach(it=>{if(it.w>UW||it.h>UH){bad.push(it);return}let ok=false;
+for(let i=0;i<sheets.length&&!ok;i++){const s=sheets[i];
+for(const sh of s.sh)if(it.h<=sh.h&&sh.x+it.w<=UW){place(s,sh,it);ok=true;break}
+if(!ok){const u=s.sh.reduce((a,b)=>a+b.h+kerf,0);if(u+it.h<=UH){const ns={y:u,h:it.h,x:0};s.sh.push(ns);place(s,ns,it);ok=true}}}
+if(!ok){const s={sh:[],it:[]};sheets.push(s);const ns={y:0,h:it.h,x:0};s.sh.push(ns);place(s,ns,it)}});
+const area=items.reduce((a,b)=>a+b.w*b.h,0)-bad.reduce((a,b)=>a+b.w*b.h,0),pct=sheets.length?Math.round(100*area/(sheets.length*SW*SH)):0;
+const edge=B.rows.reduce((a,r)=>a+r.q*(r.eL*r.L+r.eA*r.A),0)/1000;
+$("sum").innerHTML=`<div class="sum"><div><b>${f(B.W)} × ${f(B.H)} × ${f(B.D)}</b><span>cm ancho × alto × fondo</span></div><div><b>${sheets.length}</b><span>tableros (${pct}% usado)</span></div><div><b>${String(Math.round(edge*110)/100).replace(".",",")} m</b><span>tapacanto con 10% extra</span></div></div>`;
+let h=`<h2>Lista de corte para la carpintería</h2><p class="cap">Todo en cm. ${VT?"<b>Respetando la veta: Largo = medida en el sentido de la veta</b> (a lo largo del tablero de "+f(SW)+" cm); puede ser menor que el ancho. Las piezas que no se ven (traseras y cajones por dentro) sí se pueden girar.":"Largo = el lado más grande de la pieza; ancho = el lado más corto."}${RF?" Cada tablero pierde "+f(RF)+" cm de refilado por lado.":""} Grosor del tablero: ${f(B.t)} cm. Tapacanto = la cinta que tapa el borde del tablero.${B.tc?" <b>Las medidas ya descuentan "+String(B.tc).replace(".",",")+" mm de tapacanto</b> en los bordes que lo llevan.":""}</p>${B.warn.length?`<div class="warn">${B.warn.join("<br>")}</div>`:""}<div class="tw"><table><tr><th>#</th><th>Pieza</th><th>Cuántas</th><th>Largo (cm)</th><th>Ancho (cm)</th><th>Tapacanto</th></tr>`;
+lastText="Mueble "+f(B.W)+" x "+f(B.H)+" x "+f(B.D)+" cm, melamina de "+f(B.t)+" cm"+(B.tc?". Medidas de corte ya descuentan "+String(B.tc).replace(".",",")+" mm de tapacanto":"")+"\n";
+B.rows.forEach((r,i)=>{const n=nrm(r);h+=`<tr><td>${i+1}</td><td>${r.nm}</td><td>${r.q}</td><td>${f(n.lg)}</td><td>${f(n.an)}</td><td>${tcT(r)}</td></tr>`;lastText+=`${i+1}. ${r.nm}: ${r.q} piezas, largo ${f(n.lg)} cm x ancho ${f(n.an)} cm. Tapacanto: ${tcT(r)}\n`});
+h+="</table></div>";
+h+=`<h2>Herrajes</h2><p class="cap">${B.drw} pares de correderas · ${B.hing} bisagras · ${B.pull} tiradores${hw2()}.${thinM().map(q=>" "+q.n+": aparte, aprox. "+fm1(q.a*1.2)+" m².").join("")}</p>`;
+lastText+=`Correderas: ${B.drw} pares; bisagras: ${B.hing}; tiradores: ${B.pull}${hw2()}\n`;
+if(bad.length)h+='<div class="warn">Hay piezas más grandes que el tablero'+(VT?" (respetando la veta no se pueden girar)":"")+(RF?" después del refilado":"")+'. Usa un tablero más grande, reduce las medidas'+(VT?" o pon la veta en libre":"")+'.</div>';
+h+="<h2>Cómo acomodar los cortes</h2><p class='cap'>Cada rectángulo es una pieza: el número grande es el de la lista de corte y el pequeño son sus medidas en cm.</p>";
+sheets.forEach((s,i)=>{const cn={};s.it.forEach(it=>cn[it.c]=(cn[it.c]||0)+1);
+h+=`<p class="cap">Tablero ${i+1} de ${sheets.length} (${f(SW)} × ${f(SH)} cm)${VT?' · <b style="color:var(--ac)">veta ⟷ a lo largo</b>':""}</p><svg viewBox="0 0 ${SW} ${SH}" role="img" aria-label="Tablero ${i+1}"><rect width="${SW}" height="${SH}" fill="${RF?"#5a6168":"var(--board)"}"/>${RF?`<rect x="${RF}" y="${RF}" width="${UW}" height="${UH}" fill="var(--board)"/>`:""}`;
+s.it.forEach(it=>{const fs=Math.min(90,it.h*.55),two=it.w>420&&it.h>170;h+=`<rect x="${it.x}" y="${it.y}" width="${it.w}" height="${it.h}" fill="hsl(32,45%,${58+it.c*5%22}%)" stroke="var(--wl)" stroke-width="6"/><text x="${it.x+it.w/2}" y="${it.y+it.h/2+(two?-6:fs/3)}" font-size="${fs}" text-anchor="middle" fill="#2a1c0a" font-weight="700">${it.c}</text>`+(two?`<text x="${it.x+it.w/2}" y="${it.y+it.h/2+52}" font-size="46" text-anchor="middle" fill="#2a1c0a">${f(it.w)} × ${f(it.h)}</text>`:"")});
+h+=`</svg><p class="cap">En este tablero: ${Object.keys(cn).map(c=>`#${c} ${B.rows[c-1].nm} ×${cn[c]}`).join(", ")}</p>`});
+$("chip").textContent=f(B.W)+" × "+f(B.H)+" × "+f(B.D)+" cm";if(B.kk)renderPlan();if(document.activeElement!==$("wt"))$("wt").value=r1(B.W/10);{const w=$("cwarn");if(w){w.hidden=!B.warn.length;w.innerHTML=B.warn.join("<br>")}}$("out").innerHTML=h;LAST={sheets,SW,SH,pct,edge,bad,RF,VT};if(typeof TAB!="undefined"&&TAB==4)renderCost();st=stFull?B.steps.length+1:Math.min(st,B.steps.length+1);build3();up3();save()}
+let spaceM=[],hiM=null,curSp=null,R=null,S=null,C=null,grp=null,th=.5,ph=1.2,dist=4,lastSz=0,LG=null;const K=.001;
+function setupR(rr){rr.outputEncoding=THREE.sRGBEncoding;rr.toneMapping=THREE.ACESFilmicToneMapping;rr.toneMappingExposure=1.05;rr.shadowMap.enabled=true;rr.shadowMap.type=THREE.PCFSoftShadowMap}
+function envOf(rr){try{const es=new THREE.Scene();es.add(new THREE.Mesh(new THREE.BoxGeometry(10,6,10),new THREE.MeshBasicMaterial({color:0x4b5157,side:THREE.BackSide})));
+[[0,2.9,0,6,6,1.25],[-4.9,1.2,1,4,2.4,1],[4.9,1.6,-1,3,2,.7],[0,1.2,4.9,5,2,.55]].forEach(q=>{const m=new THREE.Mesh(new THREE.PlaneGeometry(q[3],q[4]),new THREE.MeshBasicMaterial({color:new THREE.Color(q[5],q[5],q[5]*.95),side:THREE.DoubleSide}));m.position.set(q[0],q[1],q[2]);m.lookAt(0,0,0);es.add(m)});
+const fl=new THREE.Mesh(new THREE.PlaneGeometry(10,10),new THREE.MeshBasicMaterial({color:0x26292c}));fl.rotation.x=-Math.PI/2;fl.position.y=-2.9;es.add(fl);
+const pm=new THREE.PMREMGenerator(rr),rt=pm.fromScene(es,.04);pm.dispose();return rt.texture}catch(e){return null}}
+function lights(sc,env){sc.environment=env;sc.add(new THREE.HemisphereLight(0xfff6ea,0x3a3530,env?.35:.9));const d=new THREE.DirectionalLight(0xfff3e2,env?1.3:1.1);d.castShadow=true;d.shadow.mapSize.set(1024,1024);d.shadow.bias=-.0004;d.shadow.normalBias=.002;sc.add(d);sc.add(d.target);
+const sh=new THREE.Mesh(new THREE.PlaneGeometry(1,1),new THREE.ShadowMaterial({opacity:.32}));sh.rotation.x=-Math.PI/2;sh.receiveShadow=true;sc.add(sh);return{d,sh}}
+function fitL(L,W,Hy,Dz,y0){const r=Math.max(W,Hy,Dz)*.75+.2,c=L.d.shadow.camera;c.left=-r;c.right=r;c.top=r;c.bottom=-r;c.near=.1;c.far=12;c.updateProjectionMatrix();L.d.position.set(1.6,3.2+Hy/2,2.4);L.sh.position.set(0,y0+.0005,0);L.sh.scale.set(r*4,r*4,1)}
+try{R=new THREE.WebGLRenderer({canvas:$("cv"),antialias:true,alpha:true});setupR(R);S=new THREE.Scene();C=new THREE.PerspectiveCamera(40,1,.05,100);LG=lights(S,envOf(R))}catch(e){R=null;$("cv").style.display="none"}
+function dr(){if(!R||(R.xr&&R.xr.isPresenting))return;dist=Math.min(20,Math.max(.8,dist));const cv=$("cv"),w=cv.clientWidth,h=cv.clientHeight;if(!w||!h)return;R.setPixelRatio(Math.min(2,devicePixelRatio||1));R.setSize(w,h,false);C.aspect=w/h;C.updateProjectionMatrix();if(FOTO)C.setViewOffset(w,h,-PX,-PY,w,h);else if(C.view)C.clearViewOffset();
+C.position.set(dist*Math.sin(ph)*Math.sin(th),dist*Math.cos(ph),dist*Math.sin(ph)*Math.cos(th));C.lookAt(0,0,0);R.render(S,C)}
+function lab(tx){const c=document.createElement("canvas"),g=c.getContext("2d");g.font="bold 34px sans-serif";const w=Math.max(64,Math.ceil(g.measureText(tx).width)+26);c.width=w;c.height=64;g.fillStyle="rgba(255,255,255,.95)";g.fillRect(0,0,w,64);g.strokeStyle="#12202b";g.lineWidth=4;g.strokeRect(2,2,w-4,60);g.fillStyle="#12202b";g.font="bold 34px sans-serif";g.textAlign="center";g.textBaseline="middle";g.fillText(tx,w/2,33);const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),depthTest:false,transparent:true,toneMapped:false}));sp.scale.set(.13*w/64,.13,1);sp.renderOrder=10;return sp}
+function wuv(g,sx,sy,sz,sd){const p=g.attributes.position,nm=g.attributes.normal,uv=g.attributes.uv,E=[sx,sy,sz],T=1/.6;
+for(let i=0;i<p.count;i++){const ax=Math.abs(nm.getX(i))>.5?0:Math.abs(nm.getY(i))>.5?1:2,o=[0,1,2].filter(q=>q!=ax),al=E[o[0]]>=E[o[1]]?o[0]:o[1],ac=al==o[0]?o[1]:o[0],P=[p.getX(i),p.getY(i),p.getZ(i)];uv.setXY(i,P[ac]*T+sd,P[al]*T+sd*1.7)}uv.needsUpdate=true}
+function mesh3(p,Bx,tex,isW,sd){const led=p.g=="led"||p.g=="ledc",cy=p.g=="cyl"||p.g=="cone"||p.g=="ledc",g=cy?new THREE.CylinderGeometry(p.sx*K/2,p.g=="cone"?p.sx*K*.3:p.sx*K/2,p.sy*K,24):new THREE.BoxGeometry(p.sx*K,p.sy*K,p.sz*K);let mt;
+if(led)mt=new THREE.MeshBasicMaterial({color:0xffffff,toneMapped:false});
+else if(p.nm=="Tirador")mt=new THREE.MeshStandardMaterial({color:p.c,metalness:.85,roughness:.28});
+else if(p.nm=="Pata"||p.nm=="Soporte")mt=new THREE.MeshStandardMaterial({color:p.c,metalness:.35,roughness:.45});
+else if(p.nomap||p.nm=="Cajón")mt=new THREE.MeshStandardMaterial({color:p.c,roughness:.8,metalness:0});
+else{mt=new THREE.MeshStandardMaterial({map:tex,color:0xffffff,roughness:isW?.62:.48,metalness:0,envMapIntensity:.75});if(!cy)wuv(g,p.sx*K,p.sy*K,p.sz*K,sd)}
+const m=new THREE.Mesh(g,mt);if(p.op){mt.transparent=true;mt.opacity=p.op;mt.depthWrite=false}else if(!led)m.castShadow=true;if(!led)m.receiveShadow=true;
+m.position.set((p.x+p.sx/2-Bx.W/2)*K,(p.y+p.sy/2-Bx.top/2)*K,(p.z+p.sz/2-Bx.D/2)*K);return m}
+function build3(){if(!R)return;if(grp){S.remove(grp);grp.traverse(o=>{if(o.geometry)o.geometry.dispose();if(o.material&&o.material.dispose)o.material.dispose()})}grp=new THREE.Group();
+const leds=B.parts.filter(p=>p.g=="led"||p.g=="ledc"),stp=Math.max(1,Math.ceil(leds.length/8)),isW=!!(FIN[cfg.fin]||[])[1];
+B.parts.forEach((p,i)=>{const m=mesh3(p,B,TEX,isW,(i*.137)%1),cy=p.g=="cyl"||p.g=="cone"||p.g=="ledc";
+if(!cy&&!p.op&&p.g!="led")m.add(new THREE.LineSegments(new THREE.EdgesGeometry(m.geometry),new THREE.LineBasicMaterial({color:0x000000,transparent:true,opacity:.2})));
+p.b=[m.position.x,m.position.y,m.position.z];p.pl=null;
+if((p.g=="led"||p.g=="ledc")&&leds.indexOf(p)%stp==0){p.pl=new THREE.PointLight(0xffffff,1,1.6,2);p.pl.position.set(0,p.g=="ledc"?-.08:p.under?-.1:0,p.under||p.g=="ledc"?0:-.12);m.add(p.pl)}
+p.m=m;p.l=null;const tx=p.lb||(p.n?"#"+p.n:"");if(tx){p.l=lab(tx);m.add(p.l)}grp.add(m)});spaceM=[];hiM=null;curSp=null;
+(B.spaces||[]).forEach(sp=>{const gs=new THREE.BoxGeometry(sp.sx*K,sp.sy*K,sp.sz*K),ms=new THREE.Mesh(gs,new THREE.MeshBasicMaterial({color:0xff7a1a,transparent:true,opacity:.28,depthWrite:false,toneMapped:false}));
+ms.position.set((sp.x+sp.sx/2-B.W/2)*K,(sp.y+sp.sy/2-B.top/2)*K,(sp.z+sp.sz/2-B.D/2)*K);ms.visible=false;ms.userData.sp=sp;grp.add(ms);spaceM.push(ms)});
+S.add(grp);fitL(LG,B.W*K,B.top*K,B.D*K,-B.top/2*K);const sz=Math.max(B.W,B.top,B.D)*K;dist=lastSz?dist*sz/lastSz:sz*1.9;lastSz=sz}
+let OPEN=false,FOTO=null,PX=0,PY=0,XRS=null,XHT=null,XRF=null,RET=null;
+function up3(){const N=B.steps.length,e=parseFloat($("ex").value)*.45;
+$("sl").textContent=st>N?"Mueble completo":"Paso "+st+" de "+N;$("st").textContent=st>N?"Así queda el mueble terminado.":B.steps[st-1];
+$("pv").disabled=st<=1;$("nx").disabled=st>N;
+if(R){B.parts.forEach(p=>{p.m.visible=p.s<=st;if(p.l)p.l.visible=$("lb").checked||(p.s==st&&st<=N);paint(p,N);const o=OPEN&&p.mv?p.mv:[0,0,0];p.m.position.set(p.b[0]+p.ex[0]*e+o[0]*K,p.b[1]+p.ex[1]*e+o[1]*K,p.b[2]+p.ex[2]*e+o[2]*K);if((FOTO||XRS)&&(p.nm=="Suelo"||p.nm=="Pared")){p.m.visible=false}if((FOTO||XRS)&&p.l)p.l.visible=false});dr()}
+{const hm=B.parts.some(p=>p.mv),nd=B.sf&&B.sf.tipo=="nido";$("vo").hidden=!hm;$("vo").textContent=OPEN?"Cerrar":nd?"Abrir nido":"Abrir cajones"}}
+const FIN={"Blanco":["#ecebe6",0],"Gris humo":["#8b8e92",0],"Grafito":["#3a3c3f",0],"Negro":["#1d1d1f",0],"Arena":["#d2c4a8",0],"Roble claro":["#c8ab80",1],"Roble natural":["#a98a60",1],"Cedro":["#94583a",1],"Nogal":["#5e4330",1],"Wengué":["#3b2c26",1]};let TEX=null;
+function mk(n){const a=FIN[n]||FIN["Roble natural"],Z=512,k=document.createElement("canvas");k.width=k.height=Z;const g=k.getContext("2d"),im=g.createImageData(Z,Z),d=im.data,bc=[1,3,5].map(i=>parseInt(a[0].substr(i,2),16)),P=2*Math.PI/Z;
+const hs=(x,y)=>{const s=Math.sin(x*12.9898+y*78.233)*43758.5453;return s-Math.floor(s)},N1=(xf,c,sd)=>{const nn=Z/c,u=((xf/c)%nn+nn)%nn,i0=Math.floor(u),t=u-i0,e=t*t*(3-2*t);return hs(i0,sd*17.1)*(1-e)+hs((i0+1)%nn,sd*17.1)*e};
+for(let y=0;y<Z;y++)for(let x=0;x<Z;x++){let v;
+if(a[1]){const w=x+3.5*Math.sin(P*y+1.3)+1.5*Math.sin(P*y*3+.4),f=N1(w,64,1),m=N1(w,16,2),l=N1(w,3,3),q=N1(w,2,4);v=1+.10*(f-.5)+.07*(m-.5)+.045*(l-.5)+.02*(q-.5)-(l>.78?(l-.78)*.35:0)+.018*Math.sin(P*y*2+f*9)+.022*(hs(x,y>>5)-.5)}
+else v=1+.025*(hs(x,y)-.5);
+const o=(y*Z+x)*4;d[o]=Math.min(255,bc[0]*v);d[o+1]=Math.min(255,bc[1]*v);d[o+2]=Math.min(255,bc[2]*v);d[o+3]=255}
+g.putImageData(im,0,0);const t=new THREE.CanvasTexture(k);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.encoding=THREE.sRGBEncoding;if(R)t.anisotropy=Math.min(8,R.capabilities.getMaxAnisotropy());return t}
+$("fin").innerHTML=Object.keys(FIN).map(k=>`<option${k=="Roble natural"?" selected":""}>${k}</option>`).join("");
+function setFin(){if(!R)return;const old=TEX,isW=!!FIN[$("fin").value][1];TEX=mk($("fin").value);if(B&&B.parts[0]&&B.parts[0].m){B.parts.forEach(p=>{const m=p.m&&p.m.material;if(m&&m.map){m.map=TEX;m.roughness=isW?.62:.48;m.needsUpdate=true}});dr()}if(old)old.dispose()}
+$("fin").onchange=()=>{cfg.fin=$("fin").value;setFin();save();vnote();if(TAB==0)renderGal()};if(R)TEX=mk($("fin").value);
+let GR=null,GS=null,GCam=null,GL=null;
+function g3(){if(GR!==null)return GR;try{const c=document.createElement("canvas");c.width=576;c.height=360;GR=new THREE.WebGLRenderer({canvas:c,antialias:true,alpha:true,preserveDrawingBuffer:true});setupR(GR);GR.setPixelRatio(1);GR.setSize(576,360,false);GS=new THREE.Scene();GL=lights(GS,envOf(GR));GCam=new THREE.PerspectiveCamera(30,576/360,.05,100)}catch(e){GR=false}return GR}
+function thumb3(cv,Bx){if(!window.THREE||!g3())return false;if(!TEX)TEX=mk(cfg.fin);const isW=!!(FIN[cfg.fin]||[])[1],gp=new THREE.Group();
+Bx.parts.filter(p=>p.nm!="Pared"&&p.nm!="Suelo"&&p.nm!="Soporte").forEach((p,i)=>gp.add(mesh3(p,Bx,TEX,isW,(i*.137)%1)));GS.add(gp);
+const W=Bx.W*K,Hy=Bx.top*K,Dz=Bx.D*K;fitL(GL,W,Hy,Dz,-Hy/2);
+const rad=Math.hypot(W,Hy,Dz)/2,ya=.62,pt=.42,dd=rad/Math.sin(GCam.fov*Math.PI/360)*.95;GCam.position.set(dd*Math.cos(pt)*Math.sin(ya),dd*Math.sin(pt),dd*Math.cos(pt)*Math.cos(ya));GCam.lookAt(0,-Hy*.04,0);
+GR.render(GS,GCam);const g=cv.getContext("2d"),w=cv.width,h=cv.height,bg=g.createRadialGradient(w*.5,h*.4,8,w*.5,h*.5,w*.8);bg.addColorStop(0,"#3b434b");bg.addColorStop(1,"#16191d");g.fillStyle=bg;g.fillRect(0,0,w,h);g.drawImage(GR.domElement,0,0,w,h);
+GS.remove(gp);gp.traverse(o=>{if(o.geometry)o.geometry.dispose();if(o.material)o.material.dispose()});return true}
+$("pv").onclick=()=>{st=Math.max(1,st-1);stFull=st>B.steps.length;up3()};$("nx").onclick=()=>{st=Math.min(B.steps.length+1,st+1);stFull=st>B.steps.length;up3()};$("ex").oninput=up3;$("lb").onchange=up3;$("lu").onchange=up3;addEventListener("resize",dr);
+const ps=new Map(),cv=$("cv");
+cv.addEventListener("pointerdown",e=>{cv.setPointerCapture(e.pointerId);ps.set(e.pointerId,[e.clientX,e.clientY])});
+cv.addEventListener("pointermove",e=>{const o=ps.get(e.pointerId);if(!o)return;
+if(ps.size==1){if(FOTO){PX+=e.clientX-o[0];PY+=e.clientY-o[1]}else{th-=(e.clientX-o[0])*.01;ph=Math.min(3,Math.max(.2,ph-(e.clientY-o[1])*.01))}}
+else{const a=[...ps.values()],d0=Math.hypot(a[0][0]-a[1][0],a[0][1]-a[1][1]);ps.set(e.pointerId,[e.clientX,e.clientY]);const b=[...ps.values()];dist*=d0/(Math.hypot(b[0][0]-b[1][0],b[0][1]-b[1][1])||d0)}
+ps.set(e.pointerId,[e.clientX,e.clientY]);dr()});
+["pointerup","pointercancel"].forEach(t=>cv.addEventListener(t,e=>ps.delete(e.pointerId)));
+cv.addEventListener("wheel",e=>{e.preventDefault();dist*=1+e.deltaY*.001;dr()},{passive:false});
+$("cp").onclick=()=>{const ta=$("txt");ta.value=lastText;const sh=()=>{ta.style.display="block";ta.select()};
+try{navigator.clipboard.writeText(lastText).then(()=>{$("cp").textContent="Lista copiada"},sh)}catch(e){sh()}};
+let LAST=null;
+const hx=q=>[1,3,5].map(i=>parseInt(q.substr(i,2),16)),MP={Lateral:["Lateral"],Piso:["Techo y piso"],Techo:["Techo y piso"],"División":["División vertical"],Estante:["Estante fijo"],Trasera:["Trasera"],"Cajón":["Lateral de cajón","Trasera de cajón","Fondo de cajón (0,6 cm)"],Frente:["Frente de cajón"],Puerta:["Puerta"],Tapa:["Tapa"],"Faldón":["Faldón trasero","Faldón largo","Faldón corto"],"Repisa baja":["Repisa baja"],Fondo:["Fondo MDF (0,3 cm)"],"Zócalo":["Zócalo frente y atrás"],"Zócalo travesaño":["Zócalo travesaño"],"Panel ciego":["Panel ciego"],Relleno:["Relleno de esquina"],Brazo:["Brazo"],Respaldo:["Respaldo"],"Travesaño":["Travesaño"]};
+function snap(k){st=k;up3();R.setClearColor(0xffffff,1);dr();const u=cv.toDataURL("image/jpeg",.85);R.setClearColor(0x000000,0);return u}
+function mkPDF(){
+const {jsPDF}=window.jspdf,d=new jsPDF({unit:"mm",format:"a4"}),Lt=LAST,M=14,PW=182,fin=$("fin").value,col=hx(FIN[fin][0]),tk=f(B.t),fm=x=>String(x).replace(".",","),BL=[26,30,34],GR=[86,100,110];
+const T=(q,x,y,sz,b,c,o)=>{const sn=z=>String(z).replace(/²/g,"2");q=Array.isArray(q)?q.map(sn):sn(q);d.setFont("helvetica",b?"bold":"normal");d.setFontSize(sz);d.setTextColor.apply(d,c||[20,30,40]);d.text(q,x,y,o)};
+const P=(q,y,sz)=>{sz=sz||11;const ls=d.splitTextToSize(q,PW);T(ls,M,y,sz);return y+ls.length*sz*.43+2};
+const np=B.rows.filter(r=>r.th==B.t).reduce((a,r)=>a+r.q,0),a6=B.rows.filter(r=>r.th!=B.t).reduce((a,r)=>a+r.q*r.L*r.A,0)/1e6,N=B.steps.length;
+T("Plano de corte y armado",M,24,24,1,BL);T("Mueble de melamina, acabado "+fin,M,32,12,0,GR);
+[[f(B.W)+" × "+f(B.H)+" × "+f(B.D),"cm (ancho × alto × fondo)"],[Lt.sheets.length+" tableros","de "+f(Lt.SW)+" × "+f(Lt.SH)+" cm, grosor "+tk+" cm"],[fm(Math.round(Lt.edge*110)/100)+" m","de tapacanto (con 10% extra)"]].forEach((c,i)=>{const x=M+i*62;d.setFillColor(228,233,232);d.rect(x,40,58,24,"F");T(c[0],x+3,50,13,1,BL);T(c[1],x+3,58,8,0,GR)});
+T("Así se ve de frente",M,74,13,1);
+const aw=PW-24,ah=66,sc=Math.min(aw/B.W,ah/B.top),ox=M+12+(aw-B.W*sc)/2,y0=82+(ah+B.top*sc)/2,X=x=>ox+x*sc,Y=y=>y0-y*sc;
+d.setLineWidth(.2);d.setDrawColor(90,70,40);d.setFillColor(col[0]*.8,col[1]*.8,col[2]*.8);
+const CN=["Respaldo","Lateral","Piso","Techo","División","Estante","Pata","Zócalo","Tapa","Faldón","Repisa baja","Mesón","Brazo","Travesaño","Tapa del diván","Tapa del brazo","Repisa del brazo"];B.parts.filter(p=>CN.includes(p.nm)&&!p.wl).sort((a,b)=>(b.nm=="Respaldo")-(a.nm=="Respaldo")).forEach(p=>d.rect(X(p.x),Y(p.y+p.sy),p.sx*sc,p.sy*sc,"FD"));
+d.setFillColor(col[0],col[1],col[2]);B.parts.forEach(p=>{if((p.nm=="Frente"||p.nm=="Puerta"||p.nm=="Panel ciego"||p.nm=="Frente del nido"||p.nm=="Frente del brazo")&&!p.wl)d.rect(X(p.x),Y(p.y+p.sy),p.sx*sc,p.sy*sc,"FD")});
+B.parts.forEach(p=>{if(!p.wl&&["Nevera","Estufa","Campana","Cubierta"].includes(p.nm)){const c=p.nm=="Nevera"?[226,229,231]:p.nm=="Campana"?[190,195,199]:[70,74,78];d.setFillColor(c[0],c[1],c[2]);d.rect(X(p.x),Y(p.y+p.sy),p.sx*sc,p.sy*sc,"FD")}});
+d.setDrawColor(214,92,8);d.setLineWidth(.3);const yt=Y(B.top)-4;d.line(X(0),yt,X(B.W),yt);T("ancho total "+f(B.W)+" cm",X(B.W/2),yt-1.5,9,1,BL,{align:"center"});
+const xr=X(B.W)+4;d.line(xr,Y(0),xr,Y(B.top));{const tx="alto total "+f(B.top)+" cm";d.setFont("helvetica","bold");d.setFontSize(9);T(tx,xr+4.5,Y(B.top/2)+d.getTextWidth(tx)/2,9,1,BL,{angle:90})}
+T("¿Cómo usar este documento?",M,166,13,1);
+P("1. Lleva las páginas de la lista de cortes y de los tableros a la carpintería: ahí están todas las piezas que debes pedir.\n2. Pide tableros de melamina del color elegido y dile que quieres tapacanto en los bordes marcados con línea roja.\n3. Compra lo que dice la página Qué comprar.\n4. Cuando tengas las piezas, arma el mueble paso a paso con los dibujos del final.\n5. Todas las medidas están en centímetros (cm).",173,11);
+d.addPage();T("Lista de cortes para la carpintería",M,20,18,1,BL);
+let y=P("Material: melamina "+fin+", grosor "+tk+" cm, en tableros de "+f(Lt.SW)+" × "+f(Lt.SH)+" cm. "+(B.tc?"Las medidas ya descuentan "+fm(B.tc)+" mm de tapacanto en los bordes marcados. ":"")+"Todas las medidas están en cm. Largo = lado más grande de la pieza; ancho = lado más corto. Tapacanto = cinta que tapa el borde; las líneas rojas del dibujo muestran qué bordes la llevan.",27,10)+2;
+const hdr=()=>{d.setFillColor(26,30,34);d.rect(M,y,PW,7,"F");[["#",2],["Pieza",10],["Cuántas",52],["Largo cm",68],["Ancho cm",88],["Tapacanto",108],["Dibujo",160]].forEach(a=>T(a[0],M+a[1],y+5,9,1,[255,255,255]));y+=7};hdr();
+B.rows.forEach((r,i)=>{if(y>262){d.addPage();y=20;hdr()}const n=nrm(r),H=14;if(i%2==0){d.setFillColor(240,243,242);d.rect(M,y,PW,H,"F")}
+const nl=d.splitTextToSize(r.nm,38),tl=d.splitTextToSize(tcT(r),48);
+T(String(i+1),M+2,y+8,10,1);T(nl,M+10,y+(nl.length>1?5.5:8),9.5);T(String(r.q),M+55,y+8,11,1);T(f(n.lg),M+68,y+8,11,1);T(f(n.an),M+88,y+8,11,1);T(tl,M+108,y+(tl.length>1?4.5:8),8);
+const s=Math.min(18/n.lg,9/n.an),rx=M+160,ry=y+2.5,rw=n.lg*s,rh=n.an*s;d.setDrawColor(130,130,130);d.setLineWidth(.2);d.setFillColor(col[0],col[1],col[2]);d.rect(rx,ry,rw,rh,"FD");
+d.setDrawColor(210,40,40);d.setLineWidth(.9);if(n.eg>0)d.line(rx,ry+rh,rx+rw,ry+rh);if(n.eg>1)d.line(rx,ry,rx+rw,ry);if(n.ea>0)d.line(rx,ry,rx,ry+rh);if(n.ea>1)d.line(rx+rw,ry,rx+rw,ry+rh);y+=H});
+T("Total: "+np+" piezas de tablero de "+tk+" cm.",M,y+7,10,1);
+d.addPage();T("Cómo acomodar los cortes en los tableros",M,20,18,1,BL);let y2=P("Cada rectángulo es una pieza: el número grande es el de la lista de cortes y el pequeño son sus medidas en cm. Es una guía: el carpintero puede acomodarlas distinto."+(LAST.VT?" Respeta la veta: el largo de cada pieza va en el sentido del largo del tablero.":"")+(LAST.RF?" Ya descuenta "+f(LAST.RF)+" cm de refilado por lado (borde gris).":""),27,10)+2;
+const s2=150/Lt.SW,sh=Lt.SH*s2,fc=c=>[235-(c*17)%45,200-(c*11)%35,150-(c*7)%25];
+Lt.sheets.forEach((s,k)=>{if(y2+sh+24>285){d.addPage();y2=20}T("Tablero "+(k+1)+" de "+Lt.sheets.length+" ("+f(Lt.SW)+" × "+f(Lt.SH)+" cm)",M,y2+4,10,1);y2+=7;
+d.setDrawColor(60,60,60);d.setLineWidth(.4);d.setFillColor(Lt.RF?190:250,Lt.RF?195:250,Lt.RF?200:250);d.rect(M,y2,150,sh,"FD");if(Lt.RF){d.setFillColor(250,250,250);d.rect(M+Lt.RF*s2,y2+Lt.RF*s2,(Lt.SW-2*Lt.RF)*s2,(Lt.SH-2*Lt.RF)*s2,"F")}if(Lt.VT)T("veta <->",M+148,y2+4,7,1,[214,92,8],{align:"right"});
+s.it.forEach(it=>{d.setFillColor.apply(d,fc(it.c));d.setLineWidth(.2);d.rect(M+it.x*s2,y2+it.y*s2,it.w*s2,it.h*s2,"FD");const cx2=M+(it.x+it.w/2)*s2,cy2=y2+(it.y+it.h/2)*s2,two=it.w*s2>=22&&it.h*s2>=11;T(String(it.c),cx2,cy2+(two?-.2:1.2),Math.min(9,Math.max(5,it.h*s2*.6)),1,[40,25,10],{align:"center"});if(two)T(f(it.w)+" × "+f(it.h),cx2,cy2+3.6,6.5,0,[40,25,10],{align:"center"})});
+const cn={};s.it.forEach(it=>cn[it.c]=(cn[it.c]||0)+1);const lg=d.splitTextToSize("En este tablero: "+Object.keys(cn).map(c=>"#"+c+" "+B.rows[c-1].nm+" ×"+cn[c]).join(", "),PW);T(lg,M,y2+sh+5,8.5,0,GR);y2+=sh+5+lg.length*4+6});
+d.addPage();T("Qué comprar",M,20,18,1,BL);let y3=30;
+const it3=buyList();
+it3.forEach(a=>{if(y3>255){d.addPage();y3=20}T(a[0],M,y3,12,1);d.setFont("helvetica","normal");d.setFontSize(11);const ls=d.splitTextToSize(String(a[1]),PW);T(ls,M,y3+6,11,0,GR);y3+=11+ls.length*4.8});if(y3>205){d.addPage();y3=16}
+T("Palabras que vas a escuchar",M,y3+4,13,1);P("Tapacanto: cinta que tapa el borde del tablero.\nLateral: pared del costado del mueble.\nTrasera: tablero de atrás que cierra el mueble.\nDivisión: pared de en medio que separa columnas.\nEstante fijo: tabla horizontal interna que no se mueve.\nCorredera: riel metálico por donde se desliza el cajón.\nBisagra: pieza metálica que permite abrir la puerta.\nPata: soporte que levanta el mueble del piso.\nSoporte de pared: pieza que sostiene un mueble colgado.\nTira LED: cinta con luces para iluminar el mueble."+(B.sf?"\nBrazo: costado del sofá; puede ser un tablero o una caja angosta.\nTravesaño: tabla que sostiene la tapa del diván.\nNido: cama de abajo que sale con ruedas.\nRodachina: rueda pequeña que se atornilla debajo.":"")+(B.kk?"\nPanel ciego: tapa fija del esquinero, no abre; la tapa el mueble de la otra pared.\nRelleno: tira de 5 cm en la esquina para que las puertas abran sin chocar.\nMesón: la cubierta de piedra o postformado sobre los muebles bajos.":""),y3+11,10.5);
+const steps=(k,s)=>{const nm=new Set();B.parts.forEach(p=>{if(p.s==k)(MP[p.nm]||[]).forEach(q=>nm.add(q))});return B.rows.map((r,i)=>nm.has(r.nm)?"#"+(i+1)+" "+r.nm:"").filter(Boolean).join(", ")};
+let mapI=null;const imgs=[];if(R){const keep=st,ke=$("ex").value,kl=$("lb").checked;for(let k=1;k<=N+1;k++)imgs.push(snap(k));$("ex").value=1;$("lb").checked=true;mapI=snap(N+1);$("ex").value=ke;$("lb").checked=kl;st=keep;up3()}
+const ar=R?$("cv").clientHeight/$("cv").clientWidth:0;let by=0;
+if(mapI){d.addPage();T("Mapa de piezas",M,20,18,1,BL);P("Aquí están todas las piezas separadas. Cada número es el de la lista de cortes: así sabes cuál es cuál.",27,10);d.addImage(mapI,"JPEG",M,42,PW,PW*ar)}
+const blk=(ttl,txt,pcs,img)=>{if(by==0||by>150){d.addPage();by=20}T(ttl,M,by+5,13,1,BL);let q=P(txt,by+12,11);if(pcs)q=P("Piezas de este paso: "+pcs,q,9.5);if(img){const w=150,h=w*ar;d.addImage(img,"JPEG",M+16,q,w,h);q+=h}by=q+10};
+B.steps.forEach((tx,i)=>blk("Paso "+(i+1)+" de "+N,tx+(R?" Las piezas naranjas son las que pones en este paso.":""),steps(i+1),imgs[i]));
+blk("Así queda terminado","Compara tu mueble con este dibujo y revisa que todo esté firme.","",imgs[N]);
+const n=d.getNumberOfPages();for(let i=1;i<=n;i++){d.setPage(i);T("Página "+i+" de "+n,M,290,8,0,[120,130,135])}
+return d.output("blob")}
+$("pdf").onclick=async()=>{const m=$("pm");m.textContent="Preparando el PDF...";try{const t0=TAB;go(1,1);let b;try{b=mkPDF()}finally{go(t0,1)}await saveFile("plano-mueble.pdf",b);m.textContent="Listo: el PDF quedó guardado."}catch(e){m.textContent=e&&e.code=="declined"?"Descarga cancelada.":e&&e.code=="nodl"?"Aquí no se puede descargar. Abre la página desde Claude.":"No se pudo crear el PDF. Intenta de nuevo."}};
+const KEY="mm_proyecto_v1";
+function DEF(){return{name:"",H:736,D:447,t:18,sheet:"2440x1830",kerf:3,fin:"Roble natural",tipo:"aparador",kind:"caja",fondo:"igual",tc:0,hol:{p:3,c:3,f:3},vt:"libre",ref:0,base:{t:"piso",h:0},luz:{w:false,k:3000,i:70},cols:[{w:400,t:"P"},{w:700,t:"C3"},{w:700,t:"C3"},{w:400,t:"P"}]}}
+function newProj(){return{v:1,name:"Mi proyecto",muebles:[DEF()],sel:0,precios:{}}}
+function clean(o){try{if(!o||o.v!=1||!Array.isArray(o.muebles)||!o.muebles.length)return null;
+const num=(x,d)=>isFinite(+x)&&+x>0?+x:d;
+const ms=o.muebles.slice(0,20).map(m=>{const d=DEF();return{name:String(m.name||""),H:num(m.H,d.H),D:num(m.D,d.D),t:[15,18].includes(+m.t)?+m.t:18,sheet:["2440x1830","2440x2150","2500x1830","2440x1220"].includes(m.sheet)?m.sheet:d.sheet,kerf:isFinite(+m.kerf)&&+m.kerf>=0&&+m.kerf<50?+m.kerf:d.kerf,fin:FIN[m.fin]?m.fin:d.fin,tipo:String(m.tipo||"").slice(0,24),base:cbase(m.base),luz:cluz(m.luz),kind:["mesa","cocina","sofa"].includes(m.kind)?m.kind:"caja",coc:ccoc(m.coc),sofa:csofa(m.sofa),W:isFinite(+m.W)&&+m.W>=300&&+m.W<=4000?+m.W:1200,mesa:cmesa(m.mesa),fondo:m.fondo=="mdf3"?"mdf3":"igual",vt:m.vt=="veta"?"veta":"libre",ref:isFinite(+m.ref)&&+m.ref>=0&&+m.ref<=50?+m.ref:0,tc:[0,.45,1,2].includes(+m.tc)?+m.tc:0,hol:chol(m.hol),
+cols:(Array.isArray(m.cols)&&m.cols.length?m.cols.slice(0,24):d.cols).map(c=>({w:num(c&&c.w,600),t:TY[c&&c.t]?c.t:"P",h:(isFinite(+(c&&c.h))&&+c.h>0)?+c.h:0,d:String((c&&c.d)||""),l:normL(c&&c.l),k:(c&&+c.k>=1)?Math.min(6,Math.round(+c.k)):undefined,kz:(c&&+c.kz>0&&+c.kz<3000)?+c.kz:undefined,n:(c&&c.n!=null&&isFinite(+c.n))?Math.max(0,Math.min(11,Math.round(+c.n))):undefined,s:Array.isArray(c&&c.s)?c.s.slice(0,12).map(v=>+v>0&&+v<5000?+v:0):[]}))}});
+return{v:1,name:String(o.name||"Mi proyecto"),muebles:ms,sel:Math.min(Math.max(+o.sel||0,0),ms.length-1),precios:cprice(o.precios),reglas:creg(o.reglas)}}catch(e){return null}}
+function readUI(){const v=i=>parseFloat($(i).value)||0;cfg.H=v("h")*10;cfg.D=v("d")*10;cfg.t=+$("t").value;cfg.sheet=$("sh").value;cfg.kerf=v("kerf")*10;cfg.fin=$("fin").value;const bt=$("bt").value;cfg.base={t:bt,h:bt=="piso"?0:v("bh")*10};cfg.luz={w:$("lw").checked,k:+$("lt").value,i:+$("li").value};cfg.fondo=$("fdo").value;if(cfg.kind=="cocina"){const o=ccoc(cfg.coc);cfg.coc=ccoc(Object.assign(o,{forma:$("kf").value,p:[v("kp1")*10,v("kp2")*10,v("kp3")*10],hb:v("khb")*10,db:v("kdb")*10,zoc:v("kzo")*10,mt:v("kmt")*10,ae:$("kae").checked?1:0,ha:v("kha")*10,da:v("kda")*10,ya:v("kya")*10,mw:v("kmw")*10,cj:$("kcj").checked?1:0}))}
+if(cfg.kind=="sofa"){const o=csofa(cfg.sofa),nd=o.tipo=="nido";cfg.sofa=csofa(Object.assign(o,{bt:$("sbt").value,aw:v("saw")*10,ha:v("sbz")*10,ce:v("sce")*10,k:+$("sk").value,mc:+$("smc").value,nw:v("snw")*10,nl:v("snl")*10,nt:v("snt")*10},nd?{hb:v("ssa")*10}:{hs:v("ssa")*10}))}
+if(cfg.kind=="mesa")cfg.mesa=cmesa({apoyo:$("ma").value,fal:$("mf").value,fh:v("mfh")*10,rep:$("mr").checked,caj:$("mc").value,cw:v("mcw")*10,k:+$("mk").value});cfg.vt=$("vt").value;cfg.ref=Math.max(0,Math.min(50,v("rf")*10));cfg.tc=+$("tcs").value;cfg.hol=chol({p:v("hp")*10,c:v("hc2")*10,f:v("hf")*10});bnote()}
+function writeUI(){$("h").value=r1(cfg.H/10);$("d").value=r1(cfg.D/10);$("t").value=cfg.t;$("sh").value=cfg.sheet;$("kerf").value=r1(cfg.kerf/10);$("fin").value=cfg.fin;{const ct=CAT.find(c=>c.id==cfg.tipo);$("cur").textContent=ct?"Mueble: "+ct.n:"Mueble personalizado"}const bb=cfg.base||{t:"piso",h:0},ll=cfg.luz||{w:false,k:3000,i:70};$("bt").value=bb.t;$("bh").value=bb.t=="piso"?15:r1(bb.h/10);$("lw").checked=!!ll.w;$("lt").value=String(ll.k);$("li").value=ll.i;$("fdo").value=cfg.fondo||"igual";{const ms=cfg.kind=="mesa",kc=cfg.kind=="cocina",sf=cfg.kind=="sofa",so=csofa(cfg.sofa),nd=sf&&so.tipo=="nido",mm=cmesa(cfg.mesa);["cardCols","cardBase","cardLuz"].forEach(k=>$(k).hidden=ms||kc||sf);["lwt","lh","ld"].forEach(k=>$(k).hidden=kc||(nd&&k!="lh"));$("cardSofa").hidden=!sf;if(sf){$("sft").value=so.tipo;$("ssal").textContent=nd?"Alto de la tapa, sin colchón (cm)":"Alto del asiento con cojín (cm)";$("ssa").value=r1((nd?so.hb:so.hs)/10);$("sbz").value=r1(so.ha/10);$("scel").textContent=nd?"Grosor del colchón de arriba (cm)":"Grosor del cojín del asiento (cm)";$("sce").value=r1(so.ce/10);$("sk").value=String(so.k);$("sbt").value=so.bt;$("saw").value=r1(so.aw/10);$("lsaw").hidden=so.bt=="recto";$("smc").value=String(so.mc);$("snw").value=r1(so.nw/10);$("snl").value=r1(so.nl/10);$("snt").value=r1(so.nt/10);$("lsk").hidden=nd;["lsmc","lsnw","lsnl","lsnt"].forEach(k=>$(k).hidden=!nd);$("scap").textContent=nd?"El largo y el fondo salen solos del colchón de arriba (con 1 cm de holgura por lado). El nido sale con ruedas y se vuelve una segunda cama. Colchones y cojines se compran aparte.":"Largo y fondo se cambian en Medidas generales. Los cojines de espuma se compran aparte: sus medidas salen en Qué comprar."}$("cardCoc").hidden=!kc;if(kc){const k=ccoc(cfg.coc);$("kf").value=k.forma;$("kp1").value=r1(k.p[0]/10);$("kp2").value=r1(k.p[1]/10);$("kp3").value=r1(k.p[2]/10);$("lkp2").hidden=k.forma=="lineal";$("lkp3").hidden=k.forma!="U";$("khb").value=r1(k.hb/10);$("kdb").value=r1(k.db/10);$("kzo").value=r1(k.zoc/10);$("kmt").value=r1(k.mt/10);$("kae").checked=!!k.ae;$("kha").value=r1(k.ha/10);$("kda").value=r1(k.da/10);$("kya").value=r1(k.ya/10);$("kmw").value=r1(k.mw/10);$("kcj").checked=!!k.cj;renderEl()}$("cardMesa").hidden=!ms;$("eq").hidden=ms||kc||sf;$("hl").textContent=ms?"Alto total (cm)":sf?"Alto del respaldo (cm)":"Alto por defecto (cm)";if(ms){$("ma").value=mm.apoyo;$("mf").value=mm.fal;$("mfh").value=r1(mm.fh/10);$("mr").checked=!!mm.rep;$("mc").value=mm.caj;$("mk").value=String(mm.k);$("mcw").value=r1(mm.cw/10)}}$("vt").value=cfg.vt||"libre";$("rf").value=r1((cfg.ref||0)/10);$("tcs").value=String(cfg.tc||0);const hl=chol(cfg.hol);$("hp").value=r1(hl.p/10);$("hc2").value=r1(hl.c/10);$("hf").value=r1(hl.f/10);bnote();ed()}
+function useProj(){cfg=proj.muebles[proj.sel];cols=cfg.cols;lastSz=0;stFull=true;writeUI();setFin();calc()}
+async function saveFile(name,blob){const dl=window.claude?await claude.use("downloads"):null;if(dl){await dl.save({filename:name,data:blob});return}if(window.claude)throw{code:"nodl"};const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},3000)}
+const pmsg=q=>{$("pn").textContent=q};let svT=0;
+function save(){if(!proj)return;clearTimeout(svT);svT=setTimeout(()=>{try{localStorage.setItem(KEY,JSON.stringify(proj));$("sv").textContent="Guardado automático en este dispositivo."}catch(e){$("sv").textContent="Aquí no se puede guardar solo. Usa «Guardar copia»."}},400)}
+$("pe").onclick=async()=>{try{await saveFile("proyecto-mueble.json",new Blob([JSON.stringify(proj,null,1)],{type:"application/json"}));pmsg("Copia guardada.")}catch(e){pmsg(e&&e.code=="declined"?"Guardado cancelado.":e&&e.code=="nodl"?"Aquí no se puede descargar. Abre la página desde Claude.":"No se pudo guardar la copia.")}};
+$("pi").onclick=()=>$("pf").click();
+$("pf").onchange=async()=>{const f0=$("pf").files&&$("pf").files[0];if(!f0)return;try{const o=clean(JSON.parse(await f0.text()));if(!o)throw 0;proj=o;useProj();pmsg("Proyecto abierto.")}catch(e){pmsg("Ese archivo no es una copia válida.")}$("pf").value=""};
+let rsT=0;$("pr").onclick=()=>{if(!rsT){$("pr").textContent="Toca otra vez para borrar todo";rsT=setTimeout(()=>{rsT=0;$("pr").textContent="Empezar de nuevo"},4000);return}clearTimeout(rsT);rsT=0;$("pr").textContent="Empezar de nuevo";proj=newProj();useProj();pmsg("Proyecto nuevo.")};
+let lr=null;try{lr=JSON.parse(localStorage.getItem(KEY))}catch(e){}
+proj=clean(lr)||newProj();
+
+const LEGN={redonda:"redondas",conica:"cónicas",cuadrada:"cuadradas"},fm1=x=>String(Math.round(x*100)/100).replace(".",",");
+function thinM(){const g={};B.rows.forEach(r=>{if(r.th!=B.t)g[r.th]=(g[r.th]||0)+r.q*r.L*r.A/1e6});return Object.keys(g).map(k=>({n:+k==3?"MDF de 0,3 cm (fondo del mueble)":+k==6?"Tablero delgado de 0,6 cm (fondos de cajón)":"Tablero de "+String(k/10).replace(".",",")+" cm",a:g[k]}))}
+function hw2(){let q="";if(B.nLegs)q+=` · ${B.nLegs} patas ${LEGN[B.legT]} de ${f(B.legH)} cm (estimación)`;if(B.nHang)q+=` · ${B.nHang} soportes de pared (estimación)`;if(B.ledLen)q+=` · ${fm1(B.ledLen*1.1/1000)} m de tira LED (con 10% extra)`;if(B.nSpot)q+=` · ${B.nSpot} ${B.nSpot>1?"focos empotrados":"foco empotrado"} (estimación)`;return q}
+function cbase(b){const t=b&&["piso","redonda","conica","cuadrada","zocalo","flotante"].includes(b.t)?b.t:"piso",h=b&&isFinite(+b.h)&&+b.h>0&&+b.h<3000?+b.h:(t=="flotante"?300:t=="zocalo"?100:150);return{t,h:t=="piso"?0:h}}
+function chol(h){const q=(v,d)=>isFinite(+v)&&+v>=0&&+v<=10?+v:d;h=h||{};return{p:q(h.p,3),c:q(h.c,3),f:q(h.f,3)}}
+function cluz(l){return{w:!!(l&&l.w),k:[2700,3000,4000,6000].includes(+(l&&l.k))?+l.k:3000,i:Math.min(100,Math.max(10,+(l&&l.i)||70))}}
+function vnote(){const e=$("vtn");if(!e)return;const w=!!(FIN[$("fin").value]||[])[1];e.textContent=w&&$("vt").value=="libre"?"Tu acabado tiene veta: para que puertas y frentes queden parejos, elige «Respetar la veta».":""}
+function bnote(){vnote();const t=$("bt").value,h=$("bh").value||0;$("bhl").hidden=t=="piso";$("bhs").textContent=t=="flotante"?"Altura del piso al mueble (cm)":t=="zocalo"?"Alto del zócalo (cm)":"Altura de las patas (cm)";$("bn").textContent=t=="flotante"?"El mueble queda colgado de la pared a "+h+" cm del piso. Debe fijarse a un muro firme.":t=="piso"?"":t=="zocalo"?"Zócalo cerrado de "+h+" cm, retirado 5 cm del frente. El alto total lo incluye.":"Las patas miden "+h+" cm. El alto total del mueble las incluye."}
+function kc(K){K/=100;const r=K<=66?255:329.7*Math.pow(K-60,-.1332),g=K<=66?99.47*Math.log(K)-161.12:288.12*Math.pow(K-60,-.0755),b=K>=66?255:K<=19?0:138.52*Math.log(K-10)-305.04;return[r,g,b].map(v=>Math.max(0,Math.min(255,v))/255)}
+function paint(p,N){const m=p.m.material,on=$("lu").checked;
+if(p.g=="led"||p.g=="ledc"){const k=kc(cfg.luz.k),fa=on?.35+.65*cfg.luz.i/100:.15;m.color.setRGB(k[0]*fa,k[1]*fa,k[2]*fa);if(p.pl){p.pl.visible=on;p.pl.color.setRGB(k[0],k[1],k[2]);p.pl.intensity=cfg.luz.i/100*1.3}return}
+const hi=(p.s==st&&st<=N&&!p.fx)||(FL&&p.ci===FL.i&&Date.now()<FL.u);if(p.nomap||p.nm=="Cajón")m.color.setHex(hi?0xff7a1a:p.c);else m.color.setHex(hi?0xff7a1a:0xffffff);
+if(p.lit&&p.tr!==on){p.tr=on;m.transparent=on;m.opacity=on?.28:1;m.needsUpdate=true}}
+document.querySelectorAll(".g2 input,.g2 select").forEach(e=>e.addEventListener("input",()=>{readUI();up3();save()}));
+$("kf").addEventListener("change",()=>{readUI();const k=ccoc(cfg.coc);$("lkp2").hidden=k.forma=="lineal";$("lkp3").hidden=k.forma!="U";const nw=kWalls(k).length;k.el.forEach(e=>{if(e.w>nw)e.w=1});cfg.coc=k;renderEl();calc()});
+$("kel").addEventListener("input",e=>{const f_=e.target.dataset.ke;if(!f_)return;const i=+e.target.dataset.i,k=ccoc(cfg.coc),el=k.el[i];if(!el)return;let re=0;
+if(f_=="t"){el.t=e.target.value;const D0=KD[el.t];el.a=D0[0];el.h=D0[1];el.d=D0[2];re=1}else if(f_=="m"){const q=(KPRE[el.t]||[])[+e.target.value];if(!q)return;el.a=q[1];if(q[2])el.h=q[2];if(q[3])el.d=q[3];re=1}else if(f_=="w")el.w=+e.target.value;else{const v=parseFloat(e.target.value);if(!(v>=0))return;el[f_]=v*10}
+cfg.coc=ccoc(k);if(re)renderEl();else{const sm=$("kel").querySelector(`[data-ke="m"][data-i="${i}"]`);if(sm)sm.value=kMatch(cfg.coc.el[i])}calc()});
+$("kel").addEventListener("click",e=>{const i=e.target.dataset.kd;if(i==null)return;const k=ccoc(cfg.coc);k.el.splice(+i,1);cfg.coc=k;renderEl();calc()});
+$("kadd").onclick=()=>{const k=ccoc(cfg.coc);if(k.el.length>=20)return;k.el.push({t:"lavaplatos",w:1,u:0,a:900});cfg.coc=k;renderEl();calc();toast("Elemento agregado: ajusta su pared y su distancia")};
+["rtt","rsp","rsm","rsf","rex"].forEach(id=>$(id).addEventListener("change",()=>{const v=k=>parseFloat($(k).value);proj.reglas=creg({tt:$("rtt").value,sp:v("rsp")*10,sm:v("rsm")*10,sf:v("rsf")*10,ex:v("rex")});save();renderCost();toast("Regla actualizada")}));
+$("rdef").onclick=()=>{proj.reglas=creg();save();renderCost();toast("Reglas de siempre")};
+$("sbt").addEventListener("change",()=>{$("lsaw").hidden=$("sbt").value=="recto"});
+$("sft").addEventListener("change",()=>{const o=csofa(cfg.sofa);cfg.sofa=csofa({tipo:$("sft").value,k:o.k,mc:o.mc,nw:o.nw,nl:o.nl,nt:o.nt,bt:o.bt,aw:o.aw});if(cfg.sofa.tipo=="cajones"){cfg.W=1900;cfg.D=800}cfg.H=800;writeUI();calc();toast($("sft").value=="nido"?"Sofá cama nido: medidas según el colchón":"Sofá con cajones")});
+$("ma").addEventListener("change",()=>{const pn=$("ma").value=="paneles";$("mf").value=pn?"trasero":"perimetral";$("mfh").value=pn?30:8;readUI();calc()});
+$("bt").addEventListener("change",()=>{const t=$("bt").value;$("bh").value=t=="flotante"?30:t=="zocalo"?10:15;readUI();calc()});
+const CAT=[
+{id:"aparador",k:["Sala"],n:"Aparador",d:"Cajones y puertas, como el #01 de la guía",c:{H:736,D:447,cols:[{w:400,t:"P"},{w:700,t:"C3"},{w:700,t:"C3"},{w:400,t:"P"}]}},
+{id:"tv",k:["Sala"],n:"Mueble de TV flotante",d:"Bajo y largo, colgado, con luz abajo",c:{H:400,D:400,base:{t:"flotante",h:300},luz:{w:true,k:3000,i:70},cols:[{w:500,t:"P"},{w:700,t:"C2"},{w:400,t:"A",l:1},{w:500,t:"P"}]}},
+{id:"closet",k:["Dormitorio","Almacenaje"],n:"Closet o ropero",d:"Alto, con puertas y repisas",c:{H:2400,D:550,cols:[{w:900,t:"P"},{w:900,t:"P"},{w:600,t:"A"}]}},
+{id:"torre",k:["Cocina","Almacenaje"],n:"Torre o despensa",d:"Columna alta con puertas",c:{H:2000,D:400,cols:[{w:600,t:"P"}]}},
+{id:"noche",k:["Dormitorio"],n:"Mesa de noche",d:"Pequeña, con cajones y patas cónicas",c:{H:450,D:400,base:{t:"conica",h:150},cols:[{w:400,t:"C2"}]}},
+{id:"comoda",k:["Dormitorio"],n:"Cómoda",d:"Dos columnas de cajones",c:{H:850,D:450,cols:[{w:800,t:"C4"},{w:800,t:"C4"}]}},
+{id:"torrepc",k:["Cocina","Almacenaje"],n:"Torre con cajones abajo",d:"Puertas arriba, 2 cajones abajo y zócalo",c:{H:2000,D:450,base:{t:"zocalo",h:100},cols:[{w:600,t:"PC",k:2,kz:450}]}},
+{id:"closetpc",k:["Dormitorio","Almacenaje"],n:"Closet con cajones abajo",d:"Puertas arriba, cajonera abajo y zócalo",c:{H:2400,D:550,base:{t:"zocalo",h:100},cols:[{w:900,t:"PC",k:3,kz:600},{w:900,t:"P"}]}},
+{id:"comoda5",k:["Dormitorio"],n:"Cómoda de 5 cajones",d:"Una columna alta de cajones",c:{H:1100,D:450,cols:[{w:800,t:"C4",d:"1 1 1 1 1"}]}},
+{id:"tvcaj",k:["Sala"],n:"Centro de TV con cajones",d:"Bajo y largo, con patas cuadradas",c:{H:500,D:420,base:{t:"cuadrada",h:100},cols:[{w:550,t:"P"},{w:700,t:"C2"},{w:550,t:"P"}]}},
+{id:"zapatero",k:["Almacenaje"],n:"Zapatero",d:"Puertas y 5 repisas poco profundas",c:{H:1000,D:350,cols:[{w:700,t:"P",n:5}]}},
+{id:"banoaereo",k:["Baño"],n:"Mueble de baño aéreo",d:"Colgado a 1,10 m, sobre el sanitario",c:{H:700,D:200,base:{t:"flotante",h:1100},cols:[{w:600,t:"P"}]}},
+{id:"lavamanos",k:["Baño"],n:"Mueble de lavamanos",d:"Flotante a 40 cm del piso, con puertas",c:{H:500,D:450,base:{t:"flotante",h:400},cols:[{w:700,t:"P",n:0}]}},
+{id:"cajonera",k:["Estudio"],n:"Cajonera de oficina",d:"3 cajones con patas cuadradas",c:{H:600,D:450,base:{t:"cuadrada",h:50},cols:[{w:400,t:"C3"}]}},
+{id:"escritorio",k:["Estudio","Mesas"],n:"Escritorio con cajonera",d:"Lateral, tapa piernas y 3 cajones",c:{kind:"mesa",W:1200,H:750,D:600,mesa:{apoyo:"paneles",fal:"trasero",fh:300,caj:"der",cw:400,k:3}}},
+{id:"escsimple",k:["Estudio","Mesas"],n:"Escritorio sencillo",d:"Dos laterales y tapa piernas",c:{kind:"mesa",W:1000,H:750,D:500,mesa:{apoyo:"paneles",fal:"trasero",fh:300,caj:"no"}}},
+{id:"comedor",k:["Mesas","Cocina"],n:"Mesa de comedor",d:"4 patas cuadradas y faldón alrededor",c:{kind:"mesa",W:1600,H:750,D:900,mesa:{apoyo:"cuadrada",fal:"perimetral",fh:80,caj:"no"}}},
+{id:"mcentro",k:["Mesas","Sala"],n:"Mesa de centro",d:"Baja, con patas cónicas y repisa abajo",c:{kind:"mesa",W:1000,H:450,D:600,mesa:{apoyo:"conica",fal:"perimetral",fh:60,rep:1,caj:"no"}}},
+{id:"sofacaj",k:["Sala"],n:"Sofá con cajones",d:"3 cajones grandes bajo el asiento",c:{kind:"sofa",W:1900,H:800,D:800,sofa:{tipo:"cajones",k:3}}},
+{id:"sofanido",k:["Sala","Dormitorio"],n:"Sofá cama nido",d:"Diván 100×190 con otra cama que sale con ruedas",c:{kind:"sofa",H:800,sofa:{tipo:"nido",mc:1000,bt:"repisa",aw:200}}},
+{id:"cocinaL",k:["Cocina"],n:"Cocina en L (por medidas)",d:"Escribe tus paredes y la app reparte bajos y aéreos",c:{kind:"cocina",coc:{forma:"L"}}},
+{id:"cocinaLin",k:["Cocina"],n:"Cocina lineal (por medidas)",d:"Una pared con nevera, lavaplatos y estufa",c:{kind:"cocina",coc:{forma:"lineal",p:[3200],el:[{t:"nevera",w:1,u:0,a:660,h:1780,d:700},{t:"lavaplatos",w:1,u:1200,a:900},{t:"estufa",w:1,u:2420,a:780,h:1030,d:620},{t:"ventana",w:1,u:1150,a:1000}]}}},
+{id:"repisero",k:["Sala","Almacenaje"],n:"Repisero o biblioteca",d:"Alto, abierto, con repisas",c:{H:1800,D:300,cols:[{w:400,t:"A"},{w:400,t:"A"},{w:400,t:"A"}]}},
+{id:"aereo",k:["Cocina"],n:"Aéreo de cocina",d:"Colgado a 1,40 m, con luz abajo",c:{H:700,D:350,base:{t:"flotante",h:1400},luz:{w:true,k:3000,i:70},cols:[{w:600,t:"P"},{w:600,t:"P"},{w:600,t:"P"}]}},
+{id:"bajo",k:["Cocina"],n:"Bajo de cocina",d:"Puertas y cajones con patas cuadradas",c:{H:720,D:580,base:{t:"cuadrada",h:100},cols:[{w:600,t:"P"},{w:600,t:"P"},{w:600,t:"C3"}]}}];
+function catCfg(c){const n=Object.assign(DEF(),JSON.parse(JSON.stringify(c.c)));n.cols=n.cols.map(q=>({w:q.w,t:q.t,h:q.h||0,d:q.d||"",l:normL(q.l),k:q.k,kz:q.kz}));n.base=cbase(n.base);n.luz=cluz(n.luz);n.tipo=c.id;n.kind=["mesa","cocina","sofa"].includes(n.kind)?n.kind:"caja";n.coc=ccoc(n.coc);n.sofa=csofa(n.sofa);n.mesa=cmesa(n.mesa);return n}
+let undoS=null;
+function useCat(id){const c=CAT.find(x=>x.id==id);if(!c)return;undoS=JSON.stringify(proj);const n=catCfg(c);n.t=cfg.t;n.sheet=cfg.sheet;n.kerf=cfg.kerf;n.fin=cfg.fin;proj.muebles[proj.sel]=n;useProj();
+$("cm").innerHTML='Cargado: <b>'+c.n+'</b>. Las medidas son de partida: cámbialas a tu gusto. <button type="button" id="un" class="ghost" style="width:auto;padding:4px 10px;margin:0 0 0 6px">Deshacer</button>';$("un").onclick=()=>{proj=JSON.parse(undoS);useProj();$("cm").textContent="Se volvió al diseño anterior."}}
+function thumb(cv,Bx,rgb,lk){
+const SS=1.5,w0=cv.width,h0=cv.height,w=Math.round(w0*SS),h=Math.round(h0*SS),g=cv.getContext("2d"),P=Bx.parts.filter(p=>!p.op&&p.nm!="Soporte");if(!P.length)return;
+const mn=[1e9,1e9,1e9],mx=[-1e9,-1e9,-1e9];
+P.forEach(p=>{const a=[p.x,p.y,p.z],s=[p.sx,p.sy,p.sz];for(let i=0;i<3;i++){mn[i]=Math.min(mn[i],a[i]);mx[i]=Math.max(mx[i],a[i]+s[i])}});
+const C0=[0,1,2].map(i=>(mn[i]+mx[i])/2),ya=.62,pt=.5,d=[-Math.sin(ya)*Math.cos(pt),-Math.sin(pt),-Math.cos(ya)*Math.cos(pt)];
+const cr=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]],nz=v=>{const l=Math.hypot(v[0],v[1],v[2]);return[v[0]/l,v[1]/l,v[2]/l]},dt=(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
+const r=nz(cr(d,[0,1,0])),u=cr(r,d),prj=q=>{const v=[q[0]-C0[0],q[1]-C0[1],q[2]-C0[2]];return[dt(v,r),dt(v,u)]};
+let a0=1e9,a1=-1e9,b0=1e9,b1=-1e9;
+for(let i=0;i<8;i++){const q=prj([i&1?mx[0]:mn[0],i&2?mx[1]:mn[1],i&4?mx[2]:mn[2]]);a0=Math.min(a0,q[0]);a1=Math.max(a1,q[0]);b0=Math.min(b0,q[1]);b1=Math.max(b1,q[1])}
+const sc=Math.min(w*.8/(a1-a0||1),h*.66/(b1-b0||1)),ox=(a0+a1)/2,oy=(b0+b1)/2,cy0=h*.46,X=a=>w/2+(a-ox)*sc,Yp=b=>cy0-(b-oy)*sc;
+const zb=new Float32Array(w*h).fill(1e30),kb=new Int32Array(w*h).fill(-1),img=g.createImageData(w,h),D8=img.data;
+const Lk=nz([.45,.85,.6]),Lf=nz([-.7,.3,.45]),V=[-d[0],-d[1],-d[2]],Hh=nz([Lk[0]+V[0],Lk[1]+V[1],Lk[2]+V[2]]),LL=1e5,Hy=Math.max(mx[1]-mn[1],1);
+const hs=x=>{const s=Math.sin(x*127.1+311.7)*43758.5453;return s-Math.floor(s)};
+const grain=(c,a,s)=>.96+.03*Math.sin(c*.21+s*7.1+Math.sin(a*.006+s)*2.3)+.015*Math.sin(c*1.1+s*3.3)+.025*(hs(Math.floor(c*1.7)+s*131)-.5);
+P.forEach((p,bi)=>{const lo=[p.x,p.y,p.z],hi=[p.x+p.sx,p.y+p.sy,p.z+p.sz],cyl=p.g=="cyl"||p.g=="cone"||p.g=="ledc",rr=p.sx/2*(p.g=="cone"?.65:1),cxp=p.x+p.sx/2,czp=p.z+p.sz/2,led=p.g=="led"||p.g=="ledc",metal=p.nm=="Tirador";
+let x0=1e9,x1=-1e9,y0=1e9,y1=-1e9;
+for(let i=0;i<8;i++){const q=prj([i&1?hi[0]:lo[0],i&2?hi[1]:lo[1],i&4?hi[2]:lo[2]]),px=X(q[0]),py=Yp(q[1]);x0=Math.min(x0,px);x1=Math.max(x1,px);y0=Math.min(y0,py);y1=Math.max(y1,py)}
+x0=Math.max(0,Math.floor(x0));x1=Math.min(w-1,Math.ceil(x1));y0=Math.max(0,Math.floor(y0));y1=Math.min(h-1,Math.ceil(y1));
+const tone=1+(hs(bi*3.7)-.5)*.06+((p.nm=="Puerta"||p.nm=="Frente")?.03:0),base=led?kc(lk).map(v=>v*255):(p.nm=="Cajón"||p.nomap)?[(p.c>>16)&255,(p.c>>8)&255,p.c&255]:rgb;
+for(let py=y0;py<=y1;py++)for(let px=x0;px<=x1;px++){
+const a=ox+(px+.5-w/2)/sc,b=oy+(cy0-py-.5)/sc,O0=C0[0]+r[0]*a+u[0]*b-d[0]*LL,O1=C0[1]+r[1]*a+u[1]*b-d[1]*LL,O2=C0[2]+r[2]*a+u[2]*b-d[2]*LL,Oo=[O0,O1,O2];
+let t=-1,nx=0,ny=0,nq=0,ea=0;
+if(!cyl){let tn=-1e30,tf=1e30;for(let k=0;k<3;k++){const t0=(lo[k]-Oo[k])/d[k],t1=(hi[k]-Oo[k])/d[k],q0=Math.min(t0,t1),q1=Math.max(t0,t1);if(q0>tn){tn=q0;ea=k}if(q1<tf)tf=q1}
+if(tn<=tf&&tn>0){t=tn;const sg=d[ea]>0?-1:1;if(ea==0)nx=sg;else if(ea==1)ny=sg;else nq=sg}}
+else{const ex=O0-cxp,ez=O2-czp,A=d[0]*d[0]+d[2]*d[2],Bq=2*(ex*d[0]+ez*d[2]),Cq=ex*ex+ez*ez-rr*rr,ds=Bq*Bq-4*A*Cq;let best=-1;
+const tc=(hi[1]-O1)/d[1];if(tc>0){const hx_=O0+d[0]*tc-cxp,hz=O2+d[2]*tc-czp;if(hx_*hx_+hz*hz<=rr*rr){best=tc;nx=0;ny=1;nq=0}}
+if(ds>=0){const ts=(-Bq-Math.sqrt(ds))/(2*A),yy=O1+d[1]*ts;if(ts>0&&yy>=lo[1]&&yy<=hi[1]&&(best<0||ts<best)){best=ts;nx=(O0+d[0]*ts-cxp)/rr;ny=0;nq=(O2+d[2]*ts-czp)/rr}}t=best}
+const i=py*w+px;
+if(t>0&&t<zb[i]){zb[i]=t;kb[i]=bi*4+(cyl?3:ea);const o=i*4;
+if(led){D8[o]=base[0];D8[o+1]=base[1];D8[o+2]=base[2]}
+else{const H=[O0+d[0]*t,O1+d[1]*t,O2+d[2]*t];let tx=1;
+if(!cyl&&!metal){const u1=(ea+1)%3,v1=(ea+2)%3,al=(hi[u1]-lo[u1])>=(hi[v1]-lo[v1])?H[u1]:H[v1],cc=(hi[u1]-lo[u1])>=(hi[v1]-lo[v1])?H[v1]:H[u1];tx=grain(cc,al,bi)}
+const nd=nx*Lk[0]+ny*Lk[1]+nq*Lk[2],nf=nx*Lf[0]+ny*Lf[1]+nq*Lf[2],nh=nx*Hh[0]+ny*Hh[1]+nq*Hh[2],
+df=.4+.62*Math.max(0,nd)+.16*Math.max(0,nf),sp=Math.pow(Math.max(0,nh),metal?14:28)*(metal?.7:.1),ao=.9+.1*Math.min(1,(H[1]-mn[1])/Hy+.25),k2=df*tone*tx*ao;
+D8[o]=Math.min(255,base[0]*k2+255*sp);D8[o+1]=Math.min(255,base[1]*k2+255*sp);D8[o+2]=Math.min(255,base[2]*k2+255*sp)}
+D8[o+3]=255}}});
+const ed2=new Uint8Array(w*h),mk2=(i,j)=>{const ki=kb[i],kj=kb[j];if(ki===kj||ki<0||kj<0)return;ed2[zb[i]<zb[j]?i:j]=1};
+for(let y=0;y<h-1;y++)for(let x=0;x<w-1;x++){const i=y*w+x;mk2(i,i+1);mk2(i,i+w)}
+for(let i=0;i<w*h;i++)if(ed2[i]){const o=i*4;D8[o]*=.62;D8[o+1]*=.62;D8[o+2]*=.62}
+g.clearRect(0,0,w0,h0);const bg=g.createRadialGradient(w0*.5,h0*.4,8,w0*.5,h0*.5,w0*.8);bg.addColorStop(0,"#3b434b");bg.addColorStop(1,"#16191d");g.fillStyle=bg;g.fillRect(0,0,w0,h0);
+const fp=prj([C0[0],0,C0[2]]),fx=X(fp[0])/SS,fy=Yp(fp[1])/SS,rx=Math.max(a1-a0,1)*sc*.5/SS,ry=rx*.28;
+const ell=(cx_,cy_,rx_,ry_,c0,c1)=>{g.save();g.translate(cx_,cy_);g.scale(1,ry_/rx_);const q=g.createRadialGradient(0,0,0,0,0,rx_);q.addColorStop(0,c0);q.addColorStop(1,c1);g.fillStyle=q;g.beginPath();g.arc(0,0,rx_,0,6.2832);g.fill();g.restore()};
+ell(fx,fy,rx*1.35,ry*1.35,"rgba(255,255,255,.07)","rgba(255,255,255,0)");ell(fx,fy,rx*1.02,ry*1.02,"rgba(0,0,0,.55)","rgba(0,0,0,0)");ell(fx,fy,rx*.62,ry*.6,"rgba(0,0,0,.45)","rgba(0,0,0,0)");
+const tmp=document.createElement("canvas");tmp.width=w;tmp.height=h;tmp.getContext("2d").putImageData(img,0,0);g.imageSmoothingEnabled=true;g.imageSmoothingQuality="high";g.drawImage(tmp,0,0,w,h,0,0,w0,h0)}
+const GC=["Todos","Sala","Dormitorio","Cocina","Baño","Estudio","Mesas","Almacenaje"];let galC="Todos",galT=0;
+function tagsOf(n){if(n.kind=="sofa"){const o=csofa(n.sofa);return["Sofá",o.tipo=="nido"?"Cama nido":"Cajones"].concat(o.bt=="repisa"?["Brazos con repisa"]:o.bt=="caja"?["Brazos anchos"]:[]).map(x=>`<span class="tg">${x}</span>`).join("")}if(n.kind=="cocina"){const k=ccoc(n.coc),q=["Cocina completa",k.forma=="lineal"?"Lineal":"En "+k.forma];if(k.ae)q.push("Con aéreos");return q.map(x=>`<span class="tg">${x}</span>`).join("")}if(n.kind=="mesa"){const m=cmesa(n.mesa),q=["Mesa",m.apoyo=="paneles"?"Laterales":"Con patas"];if(m.caj!="no")q.push("Cajones");if(m.rep)q.push("Repisa abajo");return q.map(x=>`<span class="tg">${x}</span>`).join("")}const t=[],bt=n.base.t,tp=n.cols.map(c=>c.t[0]);if(bt=="flotante")t.push("Flotante");else if(bt!="piso")t.push("Con patas");if(n.luz.w||n.cols.some(c=>normL(c.l).some(v=>v)))t.push("Luz LED");if(tp.includes("C")||n.cols.some(c=>c.t=="PC"))t.push("Cajones");if(tp.includes("P"))t.push("Puertas");if(tp.includes("A"))t.push("Abierto");return t.map(x=>`<span class="tg">${x}</span>`).join("")}
+function renderGal(){
+$("gch").innerHTML=GC.map(x=>`<button type="button" class="chip2" aria-pressed="${x==galC}" data-c="${x}">${x}</button>`).join("");
+const L=CAT.filter(c=>galC=="Todos"||c.k.includes(galC)),M=L.map(c=>{const n=catCfg(c);return{c,n,Bx:build(n)}});
+$("gal").innerHTML=M.map(m=>`<button type="button" class="gc" data-k="${m.c.id}"><canvas width="576" height="360" role="img" aria-label="Vista 3D de ${m.c.n}"></canvas><div class="gt"><h3>${m.c.n}</h3><p>${m.c.d}</p><div class="tags"><span class="tg ac">${f(m.Bx.W)} × ${f(m.Bx.H)} × ${f(m.Bx.D)} cm</span>${tagsOf(m.n)}${cfg.tipo==m.c.id?'<span class="tg ac">Actual</span>':""}</div></div></button>`).join("");
+const rgb=hx(FIN[cfg.fin][0]),tk=++galT,cvs=[...document.querySelectorAll("#gal canvas")];
+M.forEach((m,i)=>setTimeout(()=>{if(tk!==galT)return;let ok=false;try{ok=thumb3(cvs[i],m.Bx)}catch(e){ok=false}if(!ok)try{thumb(cvs[i],m.Bx,rgb,3000)}catch(e){}},20+i*60))}
+$("gch").addEventListener("click",e=>{const b=e.target.closest(".chip2");if(b){galC=b.dataset.c;renderGal()}});
+$("gal").addEventListener("click",e=>{const b=e.target.closest(".gc");if(b){useCat(b.dataset.k);go(1)}});
+function setTh(){document.documentElement.style.setProperty("--th",$("top").offsetHeight+"px")}
+setTh();addEventListener("resize",setTh);if(document.fonts&&document.fonts.ready)document.fonts.ready.then(setTh);
+$("vz").onclick=()=>{$("vw").classList.toggle("big");dr()};
+$("vo").onclick=()=>{OPEN=!OPEN;up3()};
+let FS=null;
+async function arCheck(){try{if(!R||!navigator.xr||!navigator.xr.isSessionSupported)return;$("var").hidden=!(await navigator.xr.isSessionSupported("immersive-ar"))}catch(e){$("var").hidden=true}}
+async function startAR(){if(XRS||!R)return;const ov=$("arov");ov.hidden=false;$("art").textContent="Apunta al piso y mueve el teléfono despacio hasta que aparezca el círculo naranja. Luego toca la pantalla para poner el mueble.";let ses;
+try{ses=await navigator.xr.requestSession("immersive-ar",{requiredFeatures:["hit-test"],optionalFeatures:["dom-overlay"],domOverlay:{root:ov}})}catch(e){ov.hidden=true;toast("No se pudo abrir la realidad aumentada en este teléfono.");return}
+XRS=ses;hideMenu();st=B.steps.length+1;stFull=true;up3();R.xr.enabled=true;R.xr.setReferenceSpaceType("local");await R.xr.setSession(ses);
+XRF=await ses.requestReferenceSpace("local");const vs=await ses.requestReferenceSpace("viewer");XHT=await ses.requestHitTestSource({space:vs});
+if(!RET){RET=new THREE.Mesh(new THREE.RingGeometry(.09,.12,40).rotateX(-Math.PI/2),new THREE.MeshBasicMaterial({color:0xff7a1a,toneMapped:false}));RET.matrixAutoUpdate=false;S.add(RET)}RET.visible=false;grp.visible=false;
+ses.addEventListener("select",()=>{if(!RET.visible)return;const q=new THREE.Vector3().setFromMatrixPosition(RET.matrix),cam=R.xr.getCamera(C),cp=new THREE.Vector3().setFromMatrixPosition(cam.matrixWorld);
+grp.position.set(q.x,q.y+B.top/2*K,q.z);grp.rotation.set(0,Math.atan2(cp.x-q.x,cp.z-q.z),0);LG.sh.position.set(q.x,q.y+.0005,q.z);LG.d.position.set(q.x+1.6,q.y+3.2,q.z+2.4);LG.d.target.position.set(q.x,q.y,q.z);grp.visible=true;
+$("art").textContent="Así se ve a tamaño real ("+f(B.W)+" × "+f(B.top)+" × "+f(B.D)+" cm). Toca otra vez para moverlo o usa Girar."});
+ses.addEventListener("end",endAR);
+R.setAnimationLoop((tm,fr)=>{if(fr&&XHT&&XRF){const hs=fr.getHitTestResults(XHT);if(hs.length){const ps_=hs[0].getPose(XRF);RET.visible=true;RET.matrix.fromArray(ps_.transform.matrix)}else RET.visible=false}R.render(S,C)})}
+function endAR(){if(!XRS)return;R.setAnimationLoop(null);R.xr.enabled=false;XRS=null;if(XHT&&XHT.cancel)XHT.cancel();XHT=null;XRF=null;if(RET)RET.visible=false;grp.position.set(0,0,0);grp.rotation.set(0,0,0);grp.visible=true;LG.d.target.position.set(0,0,0);fitL(LG,B.W*K,B.top*K,B.D*K,-B.top/2*K);$("arov").hidden=true;up3()}
+$("var").onclick=startAR;$("arx").onclick=()=>{if(XRS)XRS.end();else $("arov").hidden=true};$("arr").onclick=()=>{if(grp)grp.rotation.y+=Math.PI/2};arCheck();
+function enterFoto(){const cv=$("cv");cv.style.background='#000 url("'+FOTO.url+'") center/cover no-repeat';$("vw").classList.add("big");$("fbar").hidden=false;if(!FS)FS={th,ph,dist,st};st=B.steps.length+1;stFull=true;PX=0;PY=0;th=+$("fr").value;ph=+$("fi").value;hideMenu();up3();toast("Mueve el mueble con un dedo y cambia su tamaño con dos")}
+function exitFoto(){if(!FOTO)return;URL.revokeObjectURL(FOTO.url);FOTO=null;$("cv").style.background="";$("fbar").hidden=true;PX=PY=0;if(FS){th=FS.th;ph=FS.ph;dist=FS.dist;FS=null}up3()}
+function pickFoto(){let bl=false;const ob=()=>{bl=true};addEventListener("blur",ob,{once:true});document.addEventListener("visibilitychange",ob,{once:true});$("ff").click();setTimeout(()=>{removeEventListener("blur",ob);document.removeEventListener("visibilitychange",ob);if(!bl&&!FOTO)toast("Aquí no se pudo abrir la galería. En la versión instalable (Chrome) sí funcionará.")},1500)}
+$("vf").onclick=()=>{if(!R){toast("Tu teléfono no puede mostrar el 3D, así que no se puede usar la foto");return}pickFoto()};$("fc").onclick=pickFoto;$("fq").onclick=exitFoto;
+$("ff").onchange=()=>{const f0=$("ff").files&&$("ff").files[0];$("ff").value="";if(!f0)return;const url=URL.createObjectURL(f0),img=new Image();img.onload=()=>{if(FOTO)URL.revokeObjectURL(FOTO.url);FOTO={img,url};enterFoto()};img.onerror=()=>{URL.revokeObjectURL(url);toast("No se pudo abrir esa imagen")};img.src=url};
+$("fr").oninput=()=>{th=+$("fr").value;dr()};$("fi").oninput=()=>{ph=+$("fi").value;dr()};
+$("fs").onclick=()=>{if(!FOTO||!R)return;const cv=$("cv"),w=cv.width,h=cv.height,c=document.createElement("canvas");c.width=w;c.height=h;const g=c.getContext("2d"),im=FOTO.img,sc=Math.max(w/im.naturalWidth,h/im.naturalHeight),iw=im.naturalWidth*sc,ih=im.naturalHeight*sc;g.drawImage(im,(w-iw)/2,(h-ih)/2,iw,ih);dr();g.drawImage(R.domElement,0,0,w,h);
+c.toBlob(async b=>{if(!b){toast("No se pudo crear la imagen");return}try{await saveFile("mueble-en-mi-espacio.jpg",b);toast("Imagen guardada")}catch(e){toast(e&&e.code=="declined"?"Guardado cancelado":e&&e.code=="nodl"?"Aquí no se puede descargar":"No se pudo guardar la imagen")}},"image/jpeg",.9)};
+
+function normL(l){const a=Array(12).fill(0);if(Array.isArray(l))l.slice(0,12).forEach((v,i)=>{a[i]=+v==1||+v==2?+v:0});else if(l)a.fill(1);return a}
+const LTX=["Sin luz","Tira LED oculta","Foco empotrado"];
+function hideMenu(){const m=$("lmenu");if(m)m.hidden=true;if(hiM)hiM.visible=false;hiM=null;curSp=null}
+function spM(i){const c=cols[i],sp=(B.spaces||[]).filter(q=>q.i==i);return sp.length?sp[0].m:2}
+function openLight(sp,x,y){curSp=sp;if(hiM)hiM.visible=false;hiM=spaceM.find(m=>m.userData.sp&&m.userData.sp.i==sp.i&&m.userData.sp.j==sp.j)||null;if(hiM)hiM.visible=true;
+const c=cols[sp.i],q=(B.spaces||[]).find(z=>z.i==sp.i&&z.j==sp.j),m=$("lmenu"),cur=normL(c.l)[sp.j]||0,mm=q?q.m:spM(sp.i);
+$("lmt").textContent="Columna "+(sp.i+1)+" · espacio "+(sp.j+1)+" de "+mm;$("lmh").textContent=q?"Alto libre actual: "+f(q.sy)+" cm":"";$("lmi").value=q?r1(q.sy/10):"";
+m.querySelectorAll("button[data-lt]").forEach(b=>b.classList.toggle("on",+b.dataset.lt==cur));
+m.querySelector('[data-act="del"]').disabled=mm<2;m.querySelector('[data-act="add"]').disabled=mm>=12;m.querySelector('[data-act="split"]').disabled=c.w<200+t2();$("lmd").textContent=c.t=="PC"?"Quitar cajones":c.t=="P"?"Cajones abajo":"Hacer cajones";
+m.hidden=false;const hh=m.offsetHeight||330;m.style.left=Math.min(Math.max(x,124),innerWidth-124)+"px";m.style.top=Math.min(Math.max(y,hh+(($("top")||{}).offsetHeight||62)+25),innerHeight-20)+"px";if(R)dr()}
+function t2(){return cfg.t||18}
+function setLight(i,j,ty){const c=cols[i];c.l=normL(c.l);c.l[j]=ty;hideMenu();calc()}
+function matS(c,m){c.s=Array.from({length:m},(_,j)=>+((c.s||[])[j])||0);c.l=normL(c.l)}
+function spAct(act){if(!curSp)return;const{i,j}=curSp,c=cols[i],m=spM(i);
+if(act=="add"){matS(c,m);const v=c.s[j];c.s.splice(j,1,v?Math.max(50,(v-t2())/2):0,v?Math.max(50,(v-t2())/2):0);c.l.splice(j,1,c.l[j],0);c.l=normL(c.l);c.n=m}
+else if(act=="del"){if(m<2)return;matS(c,m);const k=j<m-1?j:j-1;c.s.splice(k,2,0);c.l.splice(k,2,Math.max(c.l[k],c.l[k+1]));c.l=normL(c.l);c.n=m-2}
+else if(act=="split"){const w=(c.w-t2())/2,b=JSON.parse(JSON.stringify(c));c.w=w;b.w=w;cols.splice(i+1,0,b)}
+else if(act=="drw"){if(c.t=="P"){c.t="PC";c.k=c.k||2;c.l=normL([]);c.s=[];c.n=undefined}else if(c.t=="PC"){c.t="P";c.l=normL([]);c.s=[];c.n=undefined}else c.t="C3"}
+hideMenu();ed();calc();if(act=="add")sayCol(i,"Repisa agregada");else if(act=="del")sayCol(i,"Repisa quitada");else if(act=="split"){toast("Columna "+(i+1)+" dividida en dos de "+f(cols[i].w)+" cm");flash(i);flash(i+1)}else toast(c.t=="PC"?"Columna "+(i+1)+": puertas arriba y "+(c.k||2)+" cajones abajo":c.t=="P"?"Columna "+(i+1)+": solo puertas":"Columna "+(i+1)+" ahora tiene cajones")}
+$("lmenu").addEventListener("click",e=>{const b=e.target.closest("button[data-lt]");if(b&&curSp){setLight(curSp.i,curSp.j,+b.dataset.lt);return}const a=e.target.closest("button[data-act]");if(a)spAct(a.dataset.act)});
+$("lmx").onclick=hideMenu;
+$("lmok").onclick=()=>{if(!curSp)return;const{i,j}=curSp,c=cols[i],v=parseFloat(String($("lmi").value).replace(",","."));if(!(v>0))return;matS(c,spM(i));c.s[j]=v*10;if(c.n==null)c.n=spM(i)-1;hideMenu();ed();calc();const q=B.spaces.find(z=>z.i==i&&z.j==j);if(B.warn.length)toast("Esa altura no cabe: se repartieron iguales");else{toast("Espacio "+(j+1)+" de la columna "+(i+1)+": "+f(q?q.sy:v*10)+" cm libres");flash(i)}};
+document.addEventListener("pointerdown",e=>{if(!e.target.closest("#lmenu")&&e.target!==$("cv"))hideMenu()});
+addEventListener("scroll",hideMenu,{passive:true});
+function pick(x,y){if(!R||!spaceM.length)return null;const r=$("cv").getBoundingClientRect(),v=new THREE.Vector2((x-r.left)/r.width*2-1,-((y-r.top)/r.height*2-1)),rc=new THREE.Raycaster();rc.setFromCamera(v,C);const h=rc.intersectObjects(spaceM,false);return h.length?h[0].object.userData.sp:null}
+let tp=null;
+cv.addEventListener("pointerdown",e=>{tp=ps.size==1?{x:e.clientX,y:e.clientY,t:Date.now()}:null});
+cv.addEventListener("pointerup",e=>{if(FOTO){tp=null;return}if(tp&&Math.hypot(e.clientX-tp.x,e.clientY-tp.y)<8&&Date.now()-tp.t<500){const sp=pick(e.clientX,e.clientY);if(sp)openLight(sp,e.clientX,e.clientY);else hideMenu()}tp=null});
+
+let FL=null,tsT=0;
+function toast(m){const e=$("toast");e.textContent=m;e.hidden=false;clearTimeout(tsT);tsT=setTimeout(()=>{e.hidden=true},2600)}
+function flash(i){FL={i,u:Date.now()+1500};if(R)up3();setTimeout(()=>{FL=null;if(R)up3()},1550)}
+function setWT(v,eq){if(cfg.kind=="sofa"){cfg.W=Math.max(800,Math.min(3000,v*10));calc();toast("Largo del sofá: "+f(cfg.W)+" cm");return}if(cfg.kind=="mesa"){cfg.W=Math.max(300,Math.min(4000,v*10));calc();toast("Largo de la mesa: "+f(cfg.W)+" cm");return}
+const n=cols.length,t=cfg.t,Wi=v*10-(n+1)*t;if(!(Wi>=150*n)){toast("Con "+n+" columnas el largo mínimo es "+f(150*n+(n+1)*t)+" cm");calc();return}
+const S=cols.reduce((a,c)=>a+c.w,0);let acc=0;cols.forEach((c,i)=>{if(i<n-1){c.w=Math.round((eq?Wi/n:c.w*Wi/S)*10)/10;acc+=c.w}else c.w=Math.round((Wi-acc)*10)/10});ed();calc();toast(eq?"Columnas iguales de "+f(cols[0].w)+" cm":"Largo total: "+f(B.W)+" cm")}
+$("wt").addEventListener("change",()=>{const v=parseFloat($("wt").value);if(v>0)setWT(v)});
+$("eq").onclick=()=>setWT(B.W/10,1);
+function sayCol(i,m){const k=B.spaces.filter(q=>q.i==i).length;toast(m+" · columna "+(i+1)+": "+k+(k>1?" espacios":" espacio")+" ("+(k-1)+(k-1==1?" repisa":" repisas")+")");flash(i)}
+function crcT(){const t=[];for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c>>>0}return t}let CRC=null;
+function crc32(u){CRC=CRC||crcT();let c=-1;for(let i=0;i<u.length;i++)c=CRC[(c^u[i])&255]^(c>>>8);return(c^-1)>>>0}
+function zipStore(fs){const en=new TextEncoder(),P=[],Cn=[];let off=0;
+fs.forEach(q=>{const nm=en.encode(q.n),d=typeof q.d=="string"?en.encode(q.d):q.d,cr=crc32(d),l=new DataView(new ArrayBuffer(30));
+l.setUint32(0,0x04034b50,true);l.setUint16(4,20,true);l.setUint16(6,0x0800,true);l.setUint16(12,0x21,true);l.setUint32(14,cr,true);l.setUint32(18,d.length,true);l.setUint32(22,d.length,true);l.setUint16(26,nm.length,true);P.push(new Uint8Array(l.buffer),nm,d);
+const c=new DataView(new ArrayBuffer(46));c.setUint32(0,0x02014b50,true);c.setUint16(4,20,true);c.setUint16(6,20,true);c.setUint16(8,0x0800,true);c.setUint16(14,0x21,true);c.setUint32(16,cr,true);c.setUint32(20,d.length,true);c.setUint32(24,d.length,true);c.setUint16(28,nm.length,true);c.setUint32(42,off,true);Cn.push(new Uint8Array(c.buffer),nm);off+=30+nm.length+d.length});
+const cs=Cn.reduce((a,b)=>a+b.length,0),e=new DataView(new ArrayBuffer(22));e.setUint32(0,0x06054b50,true);e.setUint16(8,fs.length,true);e.setUint16(10,fs.length,true);e.setUint32(12,cs,true);e.setUint32(16,off,true);
+return new Blob([...P,...Cn,new Uint8Array(e.buffer)],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"})}
+const xesc=v=>String(v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"),colL=i=>{let s="";i++;while(i){const m=(i-1)%26;s=String.fromCharCode(65+m)+s;i=Math.floor((i-1)/26)}return s};
+function sheetX(rows,wd){const X='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';return X+'<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><cols>'+wd.map((w,i)=>'<col min="'+(i+1)+'" max="'+(i+1)+'" width="'+w+'" customWidth="1"/>').join("")+"</cols><sheetData>"+
+rows.map((row,ri)=>'<row r="'+(ri+1)+'">'+row.map((c,ci)=>{const o=c&&typeof c=="object"?c:{v:c},rf=colL(ci)+(ri+1),st=o.b?' s="1"':"";if(o.v===""||o.v==null)return"";return typeof o.v=="number"?'<c r="'+rf+'"'+st+"><v>"+o.v+"</v></c>":'<c r="'+rf+'" t="inlineStr"'+st+'><is><t xml:space="preserve">'+xesc(o.v)+"</t></is></c>"}).join("")+"</row>").join("")+"</sheetData></worksheet>"}
+function buyList(){const Lt=LAST,fin=cfg.fin,fm=x=>String(x).replace(".",","),L=[["Tableros de melamina "+fin,Lt.sheets.length+" de "+f(Lt.SW)+" × "+f(Lt.SH)+" cm, grosor "+f(B.t)+" cm"],["Tapacanto del mismo color",fm(Math.round(Lt.edge*110)/100)+" metros (ya incluye 10% extra)"+(B.tc?", de "+fm(B.tc)+" mm":"")]];
+thinM().forEach(q=>L.push([q.n,"aprox. "+fm(Math.round(q.a*120)/100)+" m² (incluye 20% extra)"]));
+if(B.drw)L.push(["Correderas de cajón",B.drw+" pares de "+f(B.slideL)+" cm. Traen sus tornillos; revisa cuánto peso aguantan (las de extensión total de Homecenter, 40 kg)."]);
+if(B.hing)L.push(["Bisagras de cazoleta 35 mm",B.hing+". Ya traen sus tornillos. Van a 7,5–10 cm del borde de arriba y de abajo de cada puerta; si son más de dos, repartidas a igual distancia."]);if(B.nLegs)L.push(["Patas "+LEGN[B.legT]+" (estimación)",B.nLegs+" patas de "+f(B.legH)+" cm de alto"]);
+if(B.nHang)L.push(["Soportes de pared para colgar (estimación)",B.nHang+". Confirma cuánto peso aguantan y fíjalos a un muro firme."]);
+if(B.ledLen)L.push(["Tira LED",fm(Math.round(B.ledLen*1.1/10)/100)+" m (con 10% extra), luz de "+cfg.luz.k+" K. Pide también la fuente de alimentación que le corresponda."]);
+if(B.nSpot)L.push(["Focos empotrados (estimación)",B.nSpot+(B.nSpot>1?" focos":" foco")+". Pide también su fuente de alimentación y confirma el diámetro de la perforación."]);
+if(B.kcamp&&B.kcamp.length)L.push(["Campana extractora (no incluida)",B.kcamp.map(c=>"de "+f(c.a)+" cm de ancho o menos").join(", ")+". Va debajo del mueble de la campana, a 65 cm o más por encima de los fogones de gas."]);
+if(B.meson)L.push(["Mesón (no es de melamina)",String(Math.round(B.meson/100)/10).replace(".",",")+" metros lineales de "+f(B.kk.db+40)+" cm de fondo: granito, cuarzo o postformado. Pídelo con las medidas tomadas en sitio."]);
+if(B.nWheel)L.push(["Rodachinas para el nido",B.nWheel+" ruedas de 5 cm de alto o menos, con placa para atornillar."]);(B.cush||[]).forEach(c=>L.push([c.n+" (no incluido)",c.t]));
+const H=hwCalc(B,proj&&proj.reglas),TT=H.R.tt=="7x50"?"Tornillos confirmat 7 × 50 mm":"Tornillos para madera 4 × 50 mm";L.push(["Tiradores o jaladeras",String(B.pull)],[TT,H.ens+" (incluye "+H.R.ex+"% extra). Son para "+H.je+" uniones entre tableros: uno cerca de cada borde y luego cada "+f(H.R.sp)+" cm"+(B.drw?", más los de los cajones":"")+"."+(H.R.tt=="7x50"?" Necesitan broca escalonada para confirmat.":" Haz antes un agujero guía.")]);
+if(H.mod)L.push(["Tornillos 4 × 30 mm para unir módulos",H.mod+" (incluye "+H.R.ex+"% extra), para "+H.jf+" uniones donde se juntan dos tableros cara con cara, uno cada "+f(H.R.sm)+" cm."]);if(H.pun)L.push(["Puntillas para fondos",H.pun+" (incluye "+H.R.ex+"% extra), una cada "+f(H.R.sf)+" cm alrededor de cada fondo delgado."]);return L}
+function mkXLSX(){const cm=x=>Math.round(x*10)/100,mat=r=>r.th==B.t?"Melamina "+cfg.fin+" "+f(B.t)+" cm":r.th==3?"MDF 0,3 cm":r.th==6?"Tablero 0,6 cm":"Tablero "+f(r.th)+" cm",hb={b:1};
+const c1=[[{v:"Lista de corte · mueble de "+f(B.W)+" × "+f(B.H)+" × "+f(B.D)+" cm (largo × alto × fondo)",b:1}],["Medidas de corte en cm."+(B.tc?" Ya descuentan "+String(B.tc).replace(".",",")+" mm de tapacanto en los bordes que lo llevan.":"")+" Largo = lado más grande; ancho = lado más corto."],[],
+["#","Pieza","Cantidad",cfg.vt=="veta"?"Largo (cm, sentido de la veta)":"Largo (cm)","Ancho (cm)","Grosor (cm)","Material","Tapacanto","Lados largos con tapacanto","Lados cortos con tapacanto"].map(v=>({v,b:1}))];
+B.rows.forEach((r,i)=>{const n=nrm(r);c1.push([i+1,r.nm,r.q,cm(n.lg),cm(n.an),cm(r.th),mat(r),tcT(r),n.eg,n.ea])});
+const c2=[[{v:"Qué comprar",b:1}],[],[{v:"Material o herraje",b:1},{v:"Cantidad y nota",b:1}]].concat(buyList());
+const hl=chol(cfg.hol),c3=[[{v:"Resumen del mueble",b:1}],[],["Largo total (cm)",cm(B.W)],["Alto total (cm)",cm(B.H)],["Fondo total (cm)",cm(B.D)],["Columnas",cols.length],["Acabado",cfg.fin],["Grosor del tablero (cm)",cm(B.t)],["Tablero",f(LAST.SW)+" × "+f(LAST.SH)+" cm"],["Tableros necesarios",LAST.sheets.length],["Aprovechamiento (%)",LAST.pct],["Tapacanto (m, con 10% extra)",Math.round(LAST.edge*110)/100],["Fondo del mueble",B.fb?"MDF de 3 mm clavado por detrás":"Del mismo tablero, dentro de la caja"],["Base",({piso:"Apoyado en el piso",redonda:"Patas redondas",conica:"Patas cónicas",cuadrada:"Patas cuadradas",zocalo:"Zócalo",flotante:"Flotante"})[(cfg.base||{}).t]||"Apoyado en el piso"],["Luz de puertas arriba y abajo (cm)",cm(hl.p)],["Luz entre puertas (cm)",cm(hl.c)],["Luz entre cajones (cm)",cm(hl.f)],["Veta",cfg.vt=="veta"?"Respetar: el largo va en el sentido de la veta":"Libre"],["Refilado por lado (cm)",cm(+cfg.ref||0)]];
+const PT=costTot(),c4=[[{v:"Presupuesto estimado (precios en pesos)",b:1}],["Precios de referencia de Homecenter consultados el "+PF+"; cambian según ciudad, tienda y promociones."],[],["Concepto","Cantidad","Unidad","Precio unitario","Subtotal","Fuente del precio"].map(v=>({v,b:1}))];
+PT.all.forEach(r=>c4.push([r.n,r.q,r.u,r.p!=null?Math.round(r.p):"sin precio",r.sub!=null?Math.round(r.sub):"",r.own?"Precio propio":r.rf?"Homecenter "+PF+": "+r.rf[1]:"Sin referencia"]));
+c4.push([]);if(PT.mg)c4.push(["Ganancia ("+PT.mg+"%)","","","",Math.round(PT.sum*PT.mg/100)]);c4.push([{v:"TOTAL ESTIMADO",b:1},"","","",{v:Math.round(PT.tot),b:1},PT.miss.length?"Faltan "+PT.miss.length+" precios":""]);
+const X='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>',NS='xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"',RN='xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"',SH=["Cortes","Compras","Resumen","Presupuesto"];
+return zipStore([
+{n:"[Content_Types].xml",d:X+'<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>'+SH.map((_,i)=>'<Override PartName="/xl/worksheets/sheet'+(i+1)+'.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>').join("")+"</Types>"},
+{n:"_rels/.rels",d:X+'<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>'},
+{n:"xl/workbook.xml",d:X+"<workbook "+NS+" "+RN+"><sheets>"+SH.map((nm,i)=>'<sheet name="'+nm+'" sheetId="'+(i+1)+'" r:id="rId'+(i+1)+'"/>').join("")+"</sheets></workbook>"},
+{n:"xl/_rels/workbook.xml.rels",d:X+'<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'+SH.map((_,i)=>'<Relationship Id="rId'+(i+1)+'" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet'+(i+1)+'.xml"/>').join("")+'<Relationship Id="rId9" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>'},
+{n:"xl/styles.xml",d:X+"<styleSheet "+NS+'><fonts count="2"><font><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="11"/><name val="Calibri"/></font></fonts><fills count="2"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill></fills><borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="2"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="0" borderId="0" xfId="0" applyFont="1"/></cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>'},
+{n:"xl/worksheets/sheet1.xml",d:sheetX(c1,[5,26,10,11,11,11,26,34,14,14])},
+{n:"xl/worksheets/sheet2.xml",d:sheetX(c2,[42,80])},
+{n:"xl/worksheets/sheet3.xml",d:sheetX(c3,[36,40])},
+{n:"xl/worksheets/sheet4.xml",d:sheetX(c4,[48,10,10,16,14,60])}])}
+$("xl").onclick=async()=>{const m=$("xm");try{await saveFile("lista-de-corte.xlsx",mkXLSX());m.textContent="Listo: el Excel quedó guardado."}catch(e){m.textContent=e&&e.code=="declined"?"Descarga cancelada.":e&&e.code=="nodl"?"Aquí no se puede descargar. Abre la página desde Claude.":"No se pudo crear el Excel."}};
+
+const HC="https://www.homecenter.com.co/homecenter-co/",PF="11-nov-2026";
+const PREF={tab:{"2440x1830":[219900,"Tablero MDP RH 15 mm 183×244 cm (Cocuy, Timbermac), en promoción; antes $249.900","product/547798/tablero-cocuy-rh-15mm-183x244-metros/547798/"],"2440x2150":[215900,"Tablero MDP 15 mm 215×244 cm blanco (Vesto)","category/cat10598/tableros-aglomerados-y-melaminicos/"],"2500x1830":[245900,"Tablero MDP 15 mm 183×250 cm (Vesto)","category/cat10598/tableros-aglomerados-y-melaminicos/"]},
+can:[890,"Canto 0,45×19 mm, rollo de 10 m a $8.900","product/725562/canto-chantilli-045x19-rollo-10m/725562/"],mdf:[25900,"MDF 2,5 mm 183×244 cm (Timbermac); no aparece de 3 mm","category/cat6200006/tableros-mdf/"],
+cor:[77800,"Corredera extensión total 450 mm (Fixser), $38.900 cada una","product/875938/corredera-extension-total-45mmx450mm/875941/"],bis:[3490,"Bisagra cierre lento 35 mm, paquete de 10 a $34.900","category/cat860028/bisagra-muebles/"],tir:[18900,"Manija Bilbao 128 mm (Fixser)","product/395693/manija-bilbao-cromo-mate-128mm-fixser/395693/"]};
+const money=v=>"$"+String(Math.round(v)).replace(/\B(?=(\d{3})+(?!\d))/g,".");
+function cprice(o){const r={};if(o&&typeof o=="object")Object.keys(o).forEach(k=>{const v=+o[k];if(/^[a-z]{2,4}$/.test(k)&&isFinite(v)&&v>=0&&v<1e9)r[k]=v});return r}
+function refOf(k){if(k=="tab"){const q=PREF.tab[cfg.sheet];return q||null}return PREF[k]||null}
+function costRows(){const ar=th=>B.rows.filter(r=>r.th==th).reduce((a,r)=>a+r.q*r.L*r.A,0)/1e6,lam=a=>a>0?Math.ceil(a*1.2/4.4652):0,em=Math.round(LAST.edge*11)/10,R_=[
+["tab","Tablero de melamina "+f(B.t)+" cm ("+f(LAST.SW)+" × "+f(LAST.SH)+" cm)",LAST.sheets.length,"tablero"],
+["can","Tapacanto (con 10% extra)",em,"metro"],
+["mdf","MDF delgado para el fondo (lámina 183×244)",lam(ar(3)),"lámina"],
+["t6","Tablero de 0,6 cm para fondos de cajón (lámina 183×244)",lam(ar(6)),"lámina"],
+["cor","Correderas de cajón ("+f(B.slideL)+" cm)",B.drw,"par"],["bis","Bisagras",B.hing,"unidad"],["tir","Tiradores",B.pull,"unidad"],
+["pat","Patas",B.nLegs,"unidad"],["sop","Soportes de pared",B.nHang,"unidad"],["led","Tira LED (con 10% extra)",Math.round(B.ledLen*1.1/100)/10,"metro"],["foc","Focos empotrados",B.nSpot,"unidad"],
+["mes","Mesón (granito, cuarzo o postformado)",Math.round((B.meson||0)/100)/10,"metro"],["rue","Rodachinas para el nido",B.nWheel||0,"unidad"],["esp","Colchones y cojines de espuma",(B.cush||[]).reduce((a,c)=>a+c.q,0),"unidad"],["tre",(proj.reglas&&proj.reglas.tt=="7x50"?"Tornillos confirmat 7×50":"Tornillos para madera 4×50"),hwCalc(B,proj.reglas).ens,"unidad"],["trm","Tornillos 4×30 para unir módulos",hwCalc(B,proj.reglas).mod,"unidad"],["pun","Puntillas para fondos",hwCalc(B,proj.reglas).pun,"unidad"]],S_=[["ctr","Corte en la maderera",LAST.sheets.length,"tablero"],["peg","Pegado de tapacanto",em,"metro"],["mo","Mano de obra (armado e instalación)",1,"global"]];
+const mk_=a=>a.filter(x=>x[2]>0).map(([k,n,q,u])=>{const rf=refOf(k),own=proj.precios&&proj.precios[k]!=null,p=own?proj.precios[k]:rf?rf[0]:null;return{k,n,q,u,p,own,rf,sub:p!=null?p*q:null}});
+return{mat:mk_(R_),srv:mk_(S_)}}
+function costTot(){const c=costRows(),all=c.mat.concat(c.srv),sum=all.reduce((a,r)=>a+(r.sub||0),0),mg=+((proj.precios||{}).mg||0),miss=all.filter(r=>r.p==null);return{c,all,sum,mg,tot:sum*(1+mg/100),miss,mat:c.mat.reduce((a,r)=>a+(r.sub||0),0),srv:c.srv.reduce((a,r)=>a+(r.sub||0),0)}}
+function crow(r){return`<div class="cr" data-k="${r.k}"><div><b>${r.n}</b><div class="q">${String(r.q).replace(".",",")} ${r.u}${r.q!=1&&r.u!="global"?(r.u=="unidad"?"es":"s"):""}</div></div><input type="number" inputmode="numeric" min="0" step="any" data-k="${r.k}" value="${r.p!=null?Math.round(r.p):""}" placeholder="Escribe el precio" aria-label="Precio unitario de ${r.n}">
+<div class="st"><span>${r.own?"Tu precio":r.rf?`<a class="src" href="${HC+r.rf[2]}" target="_blank" rel="noopener">Homecenter ${PF}</a> · ${r.rf[1]}`:'<span class="mis">Sin precio de referencia: escríbelo</span>'}</span><span data-sub="${r.k}">${r.sub!=null?money(r.sub):"—"}</span></div></div>`}
+function renderReg(){const R=creg(proj.reglas),H=hwCalc(B,R);$("rtt").value=R.tt;$("rsp").value=r1(R.sp/10);$("rsm").value=r1(R.sm/10);$("rsf").value=r1(R.sf/10);$("rex").value=R.ex;$("rsum").textContent="Este mueble: "+(B.hing?B.hing+" bisagras, ":"")+(B.drw?B.drw+" pares de correderas, ":"")+H.ens+" tornillos de ensamble"+(H.mod?", "+H.mod+" para unir módulos":"")+(H.pun?", "+H.pun+" puntillas":"")+"."}
+function renderCost(){if(!B||!LAST)return;renderReg();const T=costTot();$("clist").innerHTML=T.c.mat.map(crow).join("");$("csrv").innerHTML=T.c.srv.map(crow).join("");$("cmg").value=T.mg;updCost(T)}
+function updCost(T){T=T||costTot();T.all.forEach(r=>{const e=document.querySelector(`[data-sub="${r.k}"]`);if(e)e.textContent=r.sub!=null?money(r.sub):"—"});
+$("ctot").innerHTML=`<h2>Total estimado</h2><p class="big">${money(T.tot)}</p><div class="tl"><span>Materiales y herrajes</span><b>${money(T.mat)}</b></div><div class="tl"><span>Servicios y mano de obra</span><b>${money(T.srv)}</b></div>${T.mg?`<div class="tl"><span>Ganancia (${String(T.mg).replace(".",",")}%)</span><b>${money(T.sum*T.mg/100)}</b></div>`:""}${T.miss.length?`<div class="warn">Faltan ${T.miss.length} precio${T.miss.length>1?"s":""} (${T.miss.map(r=>r.n.split(" (")[0].toLowerCase()).join(", ")}): el total está incompleto.</div>`:""}`}
+document.addEventListener("input",e=>{const k=e.target.dataset&&e.target.dataset.k;if(k&&e.target.closest("#t5")){proj.precios=proj.precios||{};const v=e.target.value.trim();if(v==="")delete proj.precios[k];else proj.precios[k]=Math.max(0,+v||0);save();const T=costTot();updCost(T);const row=e.target.closest(".cr"),r=T.all.find(z=>z.k==k);if(row&&r)row.querySelector(".st span").innerHTML=r.own?"Tu precio":r.rf?`<a class="src" href="${HC+r.rf[2]}" target="_blank" rel="noopener">Homecenter ${PF}</a> · ${r.rf[1]}`:'<span class="mis">Sin precio de referencia: escríbelo</span>'}});
+$("cmg").addEventListener("input",()=>{proj.precios=proj.precios||{};proj.precios.mg=Math.max(0,Math.min(300,+$("cmg").value||0));save();updCost()});
+$("cref").onclick=()=>{const mg=(proj.precios||{}).mg;proj.precios={};if(mg)proj.precios.mg=mg;save();renderCost();toast("Precios de referencia restaurados")};
+function costText(){const T=costTot(),L=["Presupuesto · mueble de "+f(B.W)+" × "+f(B.H)+" × "+f(B.D)+" cm"];T.all.forEach(r=>L.push(r.n+": "+String(r.q).replace(".",",")+" "+r.u+" × "+(r.p!=null?money(r.p):"sin precio")+" = "+(r.sub!=null?money(r.sub):"—")));if(T.mg)L.push("Ganancia "+T.mg+"%: "+money(T.sum*T.mg/100));L.push("TOTAL ESTIMADO: "+money(T.tot)+(T.miss.length?" (faltan "+T.miss.length+" precios)":""));return L.join("\n")}
+$("ccp").onclick=async()=>{const t=costText(),o=$("ctx");o.value=t;try{await navigator.clipboard.writeText(t);toast("Presupuesto copiado")}catch(e){o.style.display="block";o.select()}};
+
+let TAB=0;
+function go(i,keep){TAB=i;["tg","t1","t3","t4","t5"].forEach((t,k)=>{$(t).hidden=k!=i});document.querySelectorAll("#nav button").forEach(b=>b.setAttribute("aria-selected",String(+b.dataset.go==i)));if(i==0)renderGal();if(i==1)dr();if(i==4)renderCost();if(!keep)scrollTo(0,0)}
+document.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",()=>go(+b.dataset.go)));
+useProj();go(lr?1:0,1);
+</script><script>if("serviceWorker"in navigator&&(location.protocol=="https:"||location.hostname=="localhost"||location.hostname=="127.0.0.1"))addEventListener("load",()=>{navigator.serviceWorker.register("sw.js").catch(()=>{})})</script>
+</body></html>
