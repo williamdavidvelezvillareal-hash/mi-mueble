@@ -1,5 +1,5 @@
 // Guarda la app en el teléfono para que funcione sin internet.
-const V="mueble-modular-8";
+const V="mueble-modular-9";
 const A=["./","index.html","manifest.webmanifest","three.min.js","jspdf.umd.min.js","icon-192.png","icon-512.png","icon-maskable-512.png"];
 self.addEventListener("install",e=>{e.waitUntil(caches.open(V).then(c=>c.addAll(A)).then(()=>self.skipWaiting()))});
 self.addEventListener("activate",e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==V).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});

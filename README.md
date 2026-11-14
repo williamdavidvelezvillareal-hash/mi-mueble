@@ -7,7 +7,8 @@ App para diseñar muebles de melamina a la medida, pensada para cualquier carpin
 - Fabricar: revisión antes de cortar, lista de corte en cm con tapacanto, herrajes, perforaciones, uniones y acomodo en los tableros con sobrantes.
 - Cotizar: precios de referencia de Homecenter y Easy con fecha y enlace, rango de en cuánto saldría, búsqueda del precio de hoy en Homecenter, Easy y Mercado Libre, y tu propio presupuesto.
 - Entregar: PDF con planos, Excel, CSV, DXF, etiquetas, mostrar al cliente con foto y video.
-- Viruta, el mini carpintero: busca herramientas, hace cambios con palabras (también sin internet) y explica cada panel con un recorrido paso a paso.
+- Viruta, el mini carpintero: busca herramientas, hace cambios con palabras y explica cada panel con un recorrido paso a paso. Con internet usa Gemini a través del intermediario de Cloudflare (viruta.williamdavidvelezvillareal.workers.dev, que guarda la clave); sin internet sigue con su modo sencillo.
+- Armado paso a paso detallado: piezas, dónde va cada tornillo con medidas, puntos y medidas en el 3D, revisión.
 
 ## Archivos
 - `index.html`: la app.
