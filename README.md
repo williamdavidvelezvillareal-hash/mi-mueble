@@ -3,7 +3,7 @@
 App para diseñar muebles de melamina a la medida, pensada para cualquier carpintero y para quien quiere un mueble para su casa.
 
 - Galería de muebles para empezar, cocina por medidas, sofás y Taller para armar desde cero con piezas sueltas.
-- 3D con barra de herramientas (Tocar, Agregar, Dibujar, Medir, Más), qué va en cada columna, deshacer, vistas y cotas.
+- Taller con el 3D en el centro: barra de herramientas guardada en un botón sobre el 3D (13 grupos, buscador y «?» en cada herramienta), líneas de color de los ejes al mover, indicador de ejes, deshacer, vistas y cotas.
 - Fabricar: revisión antes de cortar, lista de corte en cm con tapacanto, herrajes, perforaciones, uniones y acomodo en los tableros con sobrantes.
 - Cotizar: precios de referencia de Homecenter y Easy con fecha y enlace, rango de en cuánto saldría, búsqueda del precio de hoy en Homecenter, Easy y Mercado Libre, y tu propio presupuesto.
 - Entregar: PDF con planos, Excel, CSV, DXF, etiquetas, mostrar al cliente con foto y video.
